@@ -14,6 +14,9 @@ a{text-decoration:none;color:inherit}
 .bar .back{color:var(--dim);font-size:.9rem}
 .bar .back:hover{color:var(--ink)}
 .bar .where{margin-left:auto;color:var(--dim);font-size:.85rem;letter-spacing:.04em}
+.mode-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+.mode-toggle a{padding:6px 13px;border-radius:999px;font-weight:700;font-size:.85rem;color:var(--dim);text-decoration:none}
+.mode-toggle a.active{background:var(--accent);color:#fff}
 .prog{max-width:680px;margin:0 auto;width:100%;padding:0 24px}
 .prog .nums{display:flex;justify-content:space-between;color:var(--dim);font-size:.82rem;margin-bottom:8px}
 .pbar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
@@ -54,6 +57,7 @@ a{text-decoration:none;color:inherit}
 <body>
 <div class="bar">
   <a class="back" id="back" href="dashboard.html">← 返回</a>
+  <div class="mode-toggle"><a id="toList" href="words.html">📋 列表</a><a class="active">🎴 逐词</a></div>
   <span class="where" id="where">加载中…</span>
 </div>
 <div class="prog" id="prog" style="display:none">
@@ -99,6 +103,7 @@ const params=new URLSearchParams(location.search);
 const exam=NAMES[params.get('exam')]?params.get('exam'):'cet6';
 document.getElementById('back').href='dashboard.html?exam='+exam;
 document.getElementById('back2').href='dashboard.html?exam='+exam;
+document.getElementById('toList').href='words.html?exam='+exam;
 
 let DECK=[], idx=0, results={};
 const KEY='study-'+exam+'-results';

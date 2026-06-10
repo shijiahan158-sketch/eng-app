@@ -48,8 +48,9 @@ if (document.getElementById("examLabel")) {
 
   // 入口接通:词汇 / 继续背单词 → 背单词页；我的笔记 → 笔记本页
   const code = MAP[param] ? param : "cet4";
+  const goList = () => { location.href = "words.html?exam=" + code; };
   const goStudy = () => { location.href = "study.html?exam=" + code; };
-  const gv = document.getElementById("goVocab"); if (gv) { gv.style.cursor = "pointer"; gv.addEventListener("click", goStudy); }
+  const gv = document.getElementById("goVocab"); if (gv) { gv.style.cursor = "pointer"; gv.addEventListener("click", goList); }
   const cs = document.getElementById("contStudy"); if (cs) cs.addEventListener("click", goStudy);
   const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
 
