@@ -8,187 +8,153 @@
 <style>
 :root{--bg:#fafaf8;--ink:#1a1a1a;--dim:#9b9b97;--line:#ececea;--accent:#5b7c6f;--ok:#2f8f5b;--no:#c2603f}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",Roboto,sans-serif;background:var(--bg);color:var(--ink);
-  min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
 a{text-decoration:none;color:inherit}
-
 .bar{display:flex;align-items:center;gap:12px;padding:18px 24px;max-width:680px;margin:0 auto;width:100%}
 .bar .back{color:var(--dim);font-size:.9rem}
 .bar .back:hover{color:var(--ink)}
 .bar .where{margin-left:auto;color:var(--dim);font-size:.85rem;letter-spacing:.04em}
-
 .prog{max-width:680px;margin:0 auto;width:100%;padding:0 24px}
 .prog .nums{display:flex;justify-content:space-between;color:var(--dim);font-size:.82rem;margin-bottom:8px}
 .pbar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .pbar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .25s}
-
 .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 24px 10px}
 .tag{letter-spacing:.22em;font-size:.72rem;color:var(--accent);font-weight:700;text-transform:uppercase}
-.word{font-size:clamp(2.6rem,10vw,4rem);font-weight:600;margin-top:18px;letter-spacing:-.01em;word-break:break-word}
+.word{font-size:clamp(2.4rem,10vw,3.8rem);font-weight:600;margin-top:18px;letter-spacing:-.01em;word-break:break-word}
 .ph{color:var(--dim);margin-top:6px;font-size:1.1rem}
-.mn{margin-top:20px;font-size:1.25rem;max-width:24ch;cursor:pointer;filter:blur(8px);user-select:none}
+.mn{margin-top:20px;font-size:1.25rem;max-width:26ch;cursor:pointer;filter:blur(8px);user-select:none}
 .mn.show{filter:none;cursor:default}
 .mn .hint{font-size:.85rem;color:var(--dim)}
 .marked{margin-top:14px;font-size:.85rem;font-weight:700;min-height:1.3em}
-.marked.k{color:var(--ok)}
-.marked.n{color:var(--no)}
-
+.marked.k{color:var(--ok)}.marked.n{color:var(--no)}
 .row{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:24px;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:11px 20px;border-radius:999px;cursor:pointer;font-size:.95rem;transition:.18s}
 .btn:hover{border-color:var(--ink)}
-.btn.play{border-color:var(--accent);color:var(--accent)}
-.btn.play:hover{background:var(--accent);color:#fff}
-.btn.no{border-color:var(--no);color:var(--no)}
-.btn.no:hover{background:var(--no);color:#fff}
-.btn.ok{border-color:var(--ok);color:var(--ok)}
-.btn.ok:hover{background:var(--ok);color:#fff}
-
-.nav{display:flex;gap:0;justify-content:center;align-items:center;margin-top:14px;color:var(--dim);font-size:.9rem}
+.btn.play{border-color:var(--accent);color:var(--accent)}.btn.play:hover{background:var(--accent);color:#fff}
+.btn.no{border-color:var(--no);color:var(--no)}.btn.no:hover{background:var(--no);color:#fff}
+.btn.ok{border-color:var(--ok);color:var(--ok)}.btn.ok:hover{background:var(--ok);color:#fff}
+.nav{display:flex;justify-content:center;align-items:center;margin-top:14px;color:var(--dim);font-size:.9rem}
 .nav button{border:0;background:none;color:var(--dim);cursor:pointer;padding:8px 16px;font-size:.95rem}
 .nav button:hover:not(:disabled){color:var(--ink)}
 .nav button:disabled{opacity:.35;cursor:default}
-.nav .next-hl{color:var(--accent);font-weight:700}
 .nav .dot{font-size:.8rem}
-
 .tip{text-align:center;color:var(--dim);font-size:.78rem;padding:6px 24px 24px}
 .kbd{border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.75rem}
-
 .done{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
 .done.show{display:flex}
-.done .big{font-size:3rem}
-.done h2{font-size:1.6rem;font-weight:600;margin-top:10px}
+.done .big{font-size:3rem}.done h2{font-size:1.6rem;font-weight:600;margin-top:10px}
 .done p{color:var(--dim);margin-top:8px;font-size:1.05rem}
 .done .again{margin-top:24px;background:var(--ink);color:var(--bg);border:0;padding:13px 26px;border-radius:999px;cursor:pointer;font-weight:600}
+.done .back2{margin-top:14px;color:var(--dim);font-size:.9rem}
+.empty{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--dim)}
+.empty.show{display:flex}
+.empty .big{font-size:2.6rem;margin-bottom:10px}
 </style>
 </head>
 <body>
 <div class="bar">
-  <a class="back" href="index.html">← 返回</a>
-  <span class="where">六级 · 核心词汇</span>
+  <a class="back" id="back" href="dashboard.html">← 返回</a>
+  <span class="where" id="where">加载中…</span>
 </div>
-<div class="prog" id="prog">
-  <div class="nums"><span id="pos">1 / 10</span><span><span id="kn" style="color:var(--ok)">认识 0</span> · <span id="unk" style="color:var(--no)">生词 0</span></span></div>
-  <div class="pbar"><span id="pfill" style="width:10%"></span></div>
+<div class="prog" id="prog" style="display:none">
+  <div class="nums"><span id="pos">0 / 0</span><span><span id="kn" style="color:#2f8f5b">认识 0</span> · <span id="unk" style="color:#c2603f">生词 0</span></span></div>
+  <div class="pbar"><span id="pfill" style="width:0%"></span></div>
 </div>
 
-<main class="stage" id="stage">
+<main class="stage" id="stage" style="display:none">
   <div class="tag" id="tag">WORD 1</div>
-  <div class="word" id="word">resilient</div>
-  <div class="ph" id="ph">/rɪˈzɪliənt/　adj.</div>
+  <div class="word" id="word">—</div>
+  <div class="ph" id="ph"></div>
   <div class="mn" id="mn"><span class="real" style="display:none"></span><span class="hint">👁 点击显示释义</span></div>
   <div class="marked" id="mark"></div>
-
   <div class="row">
     <button class="btn play" id="playBtn">🔊 发音</button>
     <button class="btn no" id="noBtn">✗ 不认识</button>
     <button class="btn ok" id="okBtn">✓ 认识</button>
   </div>
   <div class="nav">
-    <button id="prevBtn">← 上一个</button><span class="dot">·</span><button id="nextBtn" class="next-hl">下一个 →</button>
+    <button id="prevBtn">← 上一个</button><span class="dot">·</span><button id="nextBtn">下一个 →</button>
   </div>
 </main>
 
 <div class="done" id="done">
   <div class="big">🎉</div>
-  <h2>今天的 10 个词过完啦</h2>
+  <h2 id="doneTitle">这组过完啦</h2>
   <p id="doneStat">认识 0 · 生词 0</p>
-  <button class="again" id="againBtn">再来一遍</button>
+  <button class="again" id="againBtn">再背一遍</button>
+  <a class="back2" id="back2" href="dashboard.html">返回备考中心</a>
 </div>
 
-<div class="tip">键盘：<span class="kbd">←</span> <span class="kbd">→</span> 翻词 · <span class="kbd">空格</span> 显示释义 · <span class="kbd">↑</span> 认识 · <span class="kbd">↓</span> 不认识（标记后均显示释义，按 → 切词）</div>
+<div class="empty" id="empty">
+  <div class="big">🚧</div>
+  <div id="emptyMsg">该考试的词库还没上线,先试试四级 / 六级吧～</div>
+  <a class="back2" style="margin-top:18px;color:var(--accent)" href="index.html">← 回首页选考试</a>
+</div>
+
+<div class="tip" id="tip" style="display:none">键盘:<span class="kbd">←</span> <span class="kbd">→</span> 翻词 · <span class="kbd">空格</span> 显示释义 · <span class="kbd">↑</span> 认识 · <span class="kbd">↓</span> 不认识(标记后均显示释义,按 → 切词)</div>
 
 <script>
-const DECK = [
-  {w:'resilient', ph:'/rɪˈzɪliənt/', pos:'adj.', mn:'有韧性的；适应力强的；可迅速恢复的'},
-  {w:'abandon', ph:'/əˈbændən/', pos:'vt.', mn:'放弃；抛弃；遗弃'},
-  {w:'crucial', ph:'/ˈkruːʃl/', pos:'adj.', mn:'至关重要的；决定性的'},
-  {w:'enhance', ph:'/ɪnˈhæns/', pos:'vt.', mn:'提高；增强；提升'},
-  {w:'notion', ph:'/ˈnəʊʃn/', pos:'n.', mn:'概念；观念；想法'},
-  {w:'tedious', ph:'/ˈtiːdiəs/', pos:'adj.', mn:'冗长乏味的；单调的'},
-  {w:'advocate', ph:'/ˈædvəkeɪt/', pos:'v./n.', mn:'提倡，主张；拥护者'},
-  {w:'diverse', ph:'/daɪˈvɜːs/', pos:'adj.', mn:'多种多样的；各不相同的'},
-  {w:'inevitable', ph:'/ɪnˈevɪtəbl/', pos:'adj.', mn:'不可避免的；必然发生的'},
-  {w:'profound', ph:'/prəˈfaʊnd/', pos:'adj.', mn:'深刻的；深远的；渊博的'},
-];
-const KEY = 'engstudy-results';
-let idx = 0;
-let results = {};
-try { results = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) { results = {}; }
-const $ = id => document.getElementById(id);
+const NAMES={cet4:'四级',cet6:'六级',ielts:'雅思'};
+const params=new URLSearchParams(location.search);
+const exam=NAMES[params.get('exam')]?params.get('exam'):'cet6';
+document.getElementById('back').href='dashboard.html?exam='+exam;
+document.getElementById('back2').href='dashboard.html?exam='+exam;
 
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(results)); } catch(e){} }
-function play(text){
-  const a = new Audio('https://dict.youdao.com/dictvoice?type=2&audio=' + encodeURIComponent(text));
-  a.play().catch(()=>{ if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(text);u.lang='en-US';speechSynthesis.speak(u);} });
-}
-function reveal(){
-  const mn = $('mn'); mn.classList.add('show');
-  mn.querySelector('.real').style.display = '';
-  const h = mn.querySelector('.hint'); if(h) h.remove();
-}
-function counts(){
-  let k=0,u=0; for(const d of DECK){ if(results[d.w]==='known')k++; else if(results[d.w]==='unknown')u++; }
-  return {k,u};
-}
+let DECK=[], idx=0, results={};
+const KEY='study-'+exam+'-results';
+try{results=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){results={};}
+const $=id=>document.getElementById(id);
+
+const sc=document.createElement('script');
+sc.src='data/'+exam+'.js';
+sc.onload=()=>{ DECK=window.DECK||[]; if(!DECK.length){showEmpty();return;} startSession(); };
+sc.onerror=showEmpty;
+document.head.appendChild(sc);
+
+function showEmpty(){ $('where').textContent=NAMES[exam]; $('emptyMsg').textContent=NAMES[exam]+' 的词库还没上线,先试试四级 / 六级吧～'; $('empty').classList.add('show'); }
+function save(){ try{localStorage.setItem(KEY,JSON.stringify(results));}catch(e){} }
+function play(t){ const a=new Audio('https://dict.youdao.com/dictvoice?type=2&audio='+encodeURIComponent(t)); a.play().catch(()=>{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(t);u.lang='en-US';speechSynthesis.speak(u);}}); }
+function reveal(){ const m=$('mn'); m.classList.add('show'); const r=m.querySelector('.real'); if(r)r.style.display=''; const h=m.querySelector('.hint'); if(h)h.remove(); }
+function counts(){ let k=0,u=0; for(const d of DECK){ if(results[d.w]==='known')k++; else if(results[d.w]==='unknown')u++; } return {k,u}; }
+
+function startSession(){ $('prog').style.display=''; $('stage').style.display='flex'; $('tip').style.display=''; $('where').textContent=NAMES[exam]+' · 共 '+DECK.length+' 词'; idx=0; render(); }
 function render(){
-  const c = DECK[idx];
-  $('tag').textContent = 'WORD ' + (idx+1);
-  $('word').textContent = c.w;
-  $('ph').textContent = c.ph + '　' + c.pos;
-  const mn = $('mn'); mn.classList.remove('show');
-  mn.innerHTML = '<span class="real" style="display:none">'+c.mn+'</span><span class="hint">👁 点击显示释义</span>';
-  // 标记状态：生词则自动显示释义
-  const mark = $('mark'); const st = results[c.w];
-  if(st==='unknown'){ mark.className='marked n'; mark.textContent='✗ 已记录：生词'; reveal(); }
-  else if(st==='known'){ mark.className='marked k'; mark.textContent='✓ 已记录：认识'; reveal(); }
-  else { mark.className='marked'; mark.textContent=''; }
-  const {k,u} = counts();
-  $('pos').textContent = (idx+1) + ' / ' + DECK.length;
-  $('pfill').style.width = ((idx+1)/DECK.length*100) + '%';
-  $('kn').textContent = '认识 ' + k; $('unk').textContent = '生词 ' + u;
-  $('prevBtn').disabled = idx===0;
+  const c=DECK[idx];
+  $('tag').textContent='WORD '+(idx+1);
+  $('word').textContent=c.w;
+  $('ph').textContent=(c.ph?('/'+String(c.ph).replace(/^\/|\/$/g,'')+'/'):'')+(c.pos?('　'+c.pos):'');
+  const m=$('mn'); m.classList.remove('show');
+  m.innerHTML='<span class="real" style="display:none">'+c.mn+'</span><span class="hint">👁 点击显示释义</span>';
+  const st=results[c.w], mk=$('mark');
+  if(st==='unknown'){mk.className='marked n';mk.textContent='✗ 已记录:生词';reveal();}
+  else if(st==='known'){mk.className='marked k';mk.textContent='✓ 已记录:认识';reveal();}
+  else{mk.className='marked';mk.textContent='';}
+  const {k,u}=counts();
+  $('pos').textContent=(idx+1)+' / '+DECK.length;
+  $('pfill').style.width=((idx+1)/DECK.length*100)+'%';
+  $('kn').textContent='认识 '+k; $('unk').textContent='生词 '+u;
+  $('prevBtn').disabled=idx===0;
 }
-function go(n){
-  if(n < 0){ idx = Math.max(0, idx-1); render(); return; }
-  if(n >= DECK.length){ finish(); return; }
-  idx = n; render();
-}
-// 不认识：显示释义 + 记录 + 停留（不切词）
-function markUnknown(){
-  results[DECK[idx].w] = 'unknown'; save();
-  console.log('记录：' + DECK[idx].w + ' = 不认识');
-  reveal(); render();
-}
-// 认识：显示释义 + 记录 + 停留（按 → 才切）
-function markKnown(){
-  results[DECK[idx].w] = 'known'; save();
-  console.log('记录：' + DECK[idx].w + ' = 认识');
-  reveal(); render();
-}
-function finish(){
-  $('stage').style.display='none'; $('prog').style.display='none';
-  const {k,u} = counts();
-  $('doneStat').textContent = '认识 ' + k + ' · 生词 ' + u;
-  $('done').classList.add('show');
-}
-$('playBtn').addEventListener('click', ()=> play(DECK[idx].w));
-$('mn').addEventListener('click', reveal);
-$('okBtn').addEventListener('click', markKnown);
-$('noBtn').addEventListener('click', markUnknown);
-$('prevBtn').addEventListener('click', ()=> go(idx-1));
-$('nextBtn').addEventListener('click', ()=> go(idx+1));
-$('againBtn').addEventListener('click', ()=>{
-  idx=0; results={}; save();
-  $('done').classList.remove('show'); $('stage').style.display=''; $('prog').style.display=''; render();
+function go(n){ if(n<0){idx=Math.max(0,idx-1);render();return;} if(n>=DECK.length){finish();return;} idx=n; render(); }
+function markKnown(){ results[DECK[idx].w]='known'; save(); reveal(); render(); }
+function markUnknown(){ results[DECK[idx].w]='unknown'; save(); reveal(); render(); }
+function finish(){ $('stage').style.display='none'; $('prog').style.display='none'; $('tip').style.display='none'; const {k,u}=counts(); $('doneStat').textContent='认识 '+k+' · 生词 '+u+'(共 '+DECK.length+' 词)'; $('done').classList.add('show'); }
+
+$('playBtn').addEventListener('click',()=>play(DECK[idx].w));
+$('mn').addEventListener('click',reveal);
+$('okBtn').addEventListener('click',markKnown);
+$('noBtn').addEventListener('click',markUnknown);
+$('prevBtn').addEventListener('click',()=>go(idx-1));
+$('nextBtn').addEventListener('click',()=>go(idx+1));
+$('againBtn').addEventListener('click',()=>{ idx=0; $('done').classList.remove('show'); $('stage').style.display='flex'; $('prog').style.display=''; $('tip').style.display=''; render(); });
+document.addEventListener('keydown',e=>{
+  if($('stage').style.display==='none')return;
+  if(e.key==='ArrowLeft')go(idx-1);
+  else if(e.key==='ArrowRight')go(idx+1);
+  else if(e.key===' '){e.preventDefault();reveal();}
+  else if(e.key==='ArrowUp'){e.preventDefault();markKnown();}
+  else if(e.key==='ArrowDown'){e.preventDefault();markUnknown();}
 });
-document.addEventListener('keydown', e=>{
-  if(e.key==='ArrowLeft') go(idx-1);
-  else if(e.key==='ArrowRight') go(idx+1);
-  else if(e.key===' '){ e.preventDefault(); reveal(); }
-  else if(e.key==='ArrowUp'){ e.preventDefault(); markKnown(); }     // ↑ = 认识
-  else if(e.key==='ArrowDown'){ e.preventDefault(); markUnknown(); } // ↓ = 不认识
-});
-render();
 </script>
 </body>
 </html>

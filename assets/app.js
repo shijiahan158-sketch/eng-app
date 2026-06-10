@@ -46,6 +46,13 @@ if (document.getElementById("examLabel")) {
   const param = new URLSearchParams(location.search).get("exam");
   let level = MAP[param] || "四级";
 
+  // 入口接通:词汇 / 继续背单词 → 背单词页；我的笔记 → 笔记本页
+  const code = MAP[param] ? param : "cet4";
+  const goStudy = () => { location.href = "study.html?exam=" + code; };
+  const gv = document.getElementById("goVocab"); if (gv) { gv.style.cursor = "pointer"; gv.addEventListener("click", goStudy); }
+  const cs = document.getElementById("contStudy"); if (cs) cs.addEventListener("click", goStudy);
+  const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
+
   // 顶部导航高亮当前考试
   document.querySelectorAll('.nav-links a[data-exam]').forEach(a => a.classList.toggle("active", MAP[a.dataset.exam] === level));
 
