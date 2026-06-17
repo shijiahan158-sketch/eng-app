@@ -145,3 +145,69 @@ a{text-decoration:none;color:inherit}
   .types{grid-template-columns:repeat(2,1fr)}.tools{grid-template-columns:repeat(3,1fr)}.exams3{grid-template-columns:1fr}.plan{grid-template-columns:1fr}
 }
 @media(max-width:520px){.features{grid-template-columns:1fr 1fr}.types{grid-template-columns:1fr 1fr}.tools{grid-template-columns:repeat(2,1fr)}.theme-panel{left:14px;width:auto}}
+
+/* ===== 题库 / 真题页（tests.html） ===== */
+.pp-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 18px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:var(--shadow)}
+.pp-tab{padding:8px 16px;border-radius:10px;font-weight:700;font-size:.92rem;color:var(--dim);background:none;border:0;cursor:pointer}
+.pp-tab:hover{color:var(--ink)}
+.pp-tab.on{background:color-mix(in srgb,var(--brand) 12%,var(--card));color:var(--brand)}
+.pp-list{display:grid;gap:12px}
+.pp-row{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.pp-row:hover{transform:translateY(-2px);border-color:var(--brand)}
+.pp-row .n{width:42px;height:42px;flex:none;border-radius:12px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--brand) 12%,var(--card));color:var(--brand)}
+.pp-row .m{flex:1}.pp-row h4{font-size:1.02rem}.pp-row p{color:var(--dim);font-size:.85rem;margin-top:2px}
+.pp-go{border:0;cursor:pointer;padding:9px 18px;border-radius:10px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-weight:700;white-space:nowrap}
+.pp-note{color:var(--dim);font-size:.85rem;margin-top:14px;background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:12px 14px}
+.pp-empty{text-align:center;color:var(--dim);padding:50px 20px;background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.est{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);max-width:560px}
+.est .row{display:flex;align-items:center;gap:12px;margin:14px 0}
+.est .row label{width:56px;font-weight:700;font-size:.92rem}
+.est .row input[type=range]{flex:1;accent-color:var(--brand)}
+.est .row .v{width:52px;text-align:right;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.est .result{margin-top:18px;padding:18px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;text-align:center}
+.est .result>span{opacity:.9;font-size:.9rem}.est .result b{font-size:2.3rem;display:block;line-height:1.1;font-variant-numeric:tabular-nums}
+.est .result>span:last-child{display:block;margin-top:4px;font-size:.82rem;opacity:.95}
+
+/* 题库卡片网格 */
+.qfilter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.qchip{padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--dim);font-weight:600;font-size:.86rem;cursor:pointer}
+.qchip:hover{color:var(--ink)}
+.qchip.on{background:color-mix(in srgb,var(--brand) 12%,var(--card));color:var(--brand);border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.qcard{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);transition:transform .15s,border-color .15s;color:inherit}
+.qcard:hover{transform:translateY(-3px);border-color:var(--brand)}
+.qc-top{display:flex;justify-content:space-between;align-items:center}
+.qc-part{font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--card));padding:3px 9px;border-radius:999px}
+.qc-freq{font-size:.72rem;font-weight:700;color:var(--dim)}
+.qcard h4{font-size:1.06rem;line-height:1.35}.qcard h4 b{display:block;font-weight:600;color:var(--dim);font-size:.9rem;margin-top:2px}
+.qc-meta{color:var(--dim);font-size:.82rem;margin-top:auto}
+.qc-go{color:var(--brand);font-weight:700;font-size:.88rem;margin-top:4px}
+
+/* 练习详情页 practice.html */
+.pr-head{padding:24px 0 6px}
+.pr-head h1{font-size:clamp(1.4rem,3.4vw,2rem);font-weight:800;margin-top:6px}
+.pr-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;padding-bottom:50px}
+.pr-passage,.pr-qs{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}
+.pr-passage h3,.pr-qs h3{font-weight:800;margin-bottom:12px}
+.pr-passage p{margin:0 0 12px;line-height:1.8}
+.pr-tip{color:var(--dim);font-size:.86rem;margin-bottom:14px}
+.pr-q{padding:12px 0;border-bottom:1px solid var(--line)}
+.pr-q>p{font-weight:600;margin-bottom:8px}
+.pr-opt{display:inline-flex;align-items:center;gap:5px;margin-right:14px;font-size:.9rem;cursor:pointer;color:var(--ink-2,var(--ink))}
+.pr-fill{width:100%;margin-top:4px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:.95rem}
+.pr-fb{font-size:.84rem;margin-top:6px;font-weight:600;min-height:1em}
+.pr-fb.ok{color:var(--success,#16a34a)}.pr-fb.no{color:#ef4444}.pr-fb.miss{color:var(--dim)}
+.pr-score{margin-top:14px;font-weight:800;font-size:1.1rem;color:var(--brand)}
+.pr-prompt{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.pr-prompt h3{font-weight:800;margin-bottom:8px}.pr-prompt p{line-height:1.8}
+.pr-write{width:100%;min-height:240px;resize:vertical;border:1px solid var(--line);border-radius:var(--r);background:var(--card);padding:16px;font-family:inherit;font-size:1rem;color:var(--ink);line-height:1.7;box-shadow:var(--shadow)}
+.pr-write:focus{outline:none;border-color:var(--brand)}
+.pr-wrow{display:flex;align-items:center;gap:14px;margin:12px 0}
+.pr-wc{font-weight:700;color:var(--dim)}
+.btn-ghost2{border:1px solid var(--line);background:var(--card);color:var(--brand);font-weight:700;padding:8px 16px;border-radius:10px;cursor:pointer}
+.btn-ghost2:hover{border-color:var(--brand)}
+.pr-model{margin-top:8px;background:color-mix(in srgb,var(--brand) 6%,var(--card));border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.pr-model h3{font-weight:800;margin-bottom:8px}.pr-model p{line-height:1.8}
+.pr-audio{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px}
+.pr-transcript{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;line-height:1.8;margin-bottom:16px;font-family:inherit}
+@media(max-width:760px){.pr-cols{grid-template-columns:1fr}}

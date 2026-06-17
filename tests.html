@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#4f46e5" />
+<title>题库 · 真题 · EngHub</title>
+<script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="m">📚</span> EngHub</a>
+  <nav class="nav-links" id="navLinks">
+    <a href="index.html">首页</a>
+    <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
+    <a href="dashboard.html?exam=cet6" data-exam="cet6">六级</a>
+    <a href="dashboard.html?exam=ielts" data-exam="ielts">雅思</a>
+  </nav>
+  <div class="nav-right">
+    <div class="nav-search">🔍 <input placeholder="搜单词 / 题目…" /></div>
+    <button class="btn-login">登录</button>
+  </div>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</header>
+
+<div class="wrap">
+  <section class="sec">
+    <div class="sec-h">
+      <h2>📝 题库 · 真题</h2>
+      <a class="more" id="backDash" href="dashboard.html">← 返回备考中心</a>
+    </div>
+    <p class="sub" id="examLabel2"></p>
+    <div class="pp-tabs" id="tabs"></div>
+    <div id="panel"></div>
+  </section>
+</div>
+
+<footer class="foot">EngHub · 题库为占位演示，接入真实真题后开放作答与判分</footer>
+<script src="assets/app.js"></script>
+<script src="data/practice.js"></script>
+<script>
+(function(){
+  var MAP={cet4:"四级",cet6:"六级",ielts:"雅思"};
+  var qp=new URLSearchParams(location.search);
+  var exam=qp.get("exam"); if(!MAP[exam]) exam=localStorage.getItem("engapp-exam")||"cet4"; if(!MAP[exam]) exam="cet4";
+  try{localStorage.setItem("engapp-exam",exam);}catch(e){}
+  var label=MAP[exam];
+  document.getElementById("examLabel2").textContent="当前：" + label + " · 选板块练习，或用智能估分预测分数";
+  document.getElementById("backDash").href="dashboard.html?exam="+exam;
+  // 高亮顶部导航当前考试
+  document.querySelectorAll('.nav-links a[data-exam]').forEach(function(a){a.classList.toggle("active",a.dataset.exam===exam);});
+
+  var TABS=[
+    {id:"real",t:"历年真题"},{id:"listening",t:"听力"},{id:"reading",t:"阅读"},
+    {id:"writing",t:"写作"},{id:"translation",t:"翻译"},{id:"mock",t:"全真模考"},{id:"score",t:"智能估分"}
+  ];
+  function paintTabs(active){
+    document.getElementById("tabs").innerHTML=TABS.map(function(x){
+      return '<button class="pp-tab '+(x.id===active?'on':'')+'" data-id="'+x.id+'">'+x.t+'</button>';
+    }).join("");
+    document.querySelectorAll(".pp-tab").forEach(function(b){ b.onclick=function(){ open(b.dataset.id); }; });
+  }
+  var PAGE_SIZE=24;     // 每页 24 篇
+  var filter="全部";
+  function open(id){
+    filter="全部";
+    paintTabs(id);
+    history.replaceState(null,"","tests.html?type="+id+"&exam="+exam);
+    var panel=document.getElementById("panel");
+    if(id==="score"){ panel.innerHTML=estimatorHTML(); bindEstimator(); return; }
+    var items=(window.PRACTICE&&window.PRACTICE[id])||[];
+    if(!items.length){ panel.innerHTML='<div class="pp-empty">该板块内容准备中</div>'; return; }
+    var isReading=(id==="reading");
+    var chips;
+    if(isReading){               // 阅读：P几 = 页码（每页 24 篇）
+      var pageCount=Math.max(1,Math.ceil(items.length/PAGE_SIZE));
+      chips=["全部"]; for(var i=1;i<=pageCount;i++) chips.push("P"+i);
+    }else{                       // 其它板块：按小节/题型筛选
+      chips=["全部"].concat(items.map(function(x){return x.part;}).filter(function(v,i,a){return a.indexOf(v)===i;}));
+    }
+    panel.innerHTML =
+      (chips.length>1 ? '<div class="qfilter" id="qfilter">'+chips.map(function(p){return '<button class="qchip'+(p==="全部"?" on":"")+'" data-p="'+p+'">'+p+'</button>';}).join("")+'</div>' : '')+
+      '<div class="qgrid" id="qgrid"></div>'+
+      '<p class="pp-note">📌 内容为示例题，接入真实题库后将替换为完整真题，并支持作答、判分与错题记录。</p>';
+    var grid=document.getElementById("qgrid");
+    function paint(){
+      var list;
+      if(isReading){
+        if(filter==="全部") list=items;
+        else { var p=parseInt(filter.slice(1),10)-1; list=items.slice(p*PAGE_SIZE,(p+1)*PAGE_SIZE); }
+      }else{
+        list=items.filter(function(x){return filter==="全部"||x.part===filter;});
+      }
+      grid.innerHTML=list.map(function(it){
+        return '<a class="qcard" href="practice.html?type='+id+'&id='+it.id+'&exam='+exam+'">'+
+          '<div class="qc-top">'+(isReading?'<span></span>':'<span class="qc-part">'+it.part+'</span>')+'<span class="qc-freq">'+it.freq+'</span></div>'+
+          '<h4>'+it.en+' <b>'+it.zh+'</b></h4>'+
+          '<div class="qc-meta">难度 '+it.level+(it.count?(" · "+it.count+" 题"):"")+'</div>'+
+          '<span class="qc-go">开始练习 →</span></a>';
+      }).join("");
+    }
+    paint();
+    var qf=document.getElementById("qfilter");
+    if(qf){ qf.querySelectorAll(".qchip").forEach(function(b){ b.onclick=function(){ filter=b.dataset.p; qf.querySelectorAll(".qchip").forEach(function(x){x.classList.toggle("on",x===b);}); paint(); }; }); }
+  }
+
+  function estimatorHTML(){
+    var ielts=exam==="ielts";
+    var secs=ielts?[["听力","lis"],["阅读","read"],["写作","wri"],["口语","spk"]]:[["听力","lis"],["阅读","read"],["写作","wri"],["翻译","tra"]];
+    var min=ielts?4:0, max=ielts?9:100, step=ielts?0.5:5, def=ielts?6:60;
+    var h='<div class="est"><h3 style="font-weight:800;margin-bottom:4px">智能估分（'+label+'）</h3>'+
+      '<p style="color:var(--dim);font-size:.86rem">'+(ielts?'拖动估计各项 band，自动算总 band':'拖动估计各项掌握度，自动预测 710 分制总分')+'</p>';
+    secs.forEach(function(s){
+      h+='<div class="row"><label>'+s[0]+'</label><input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+def+'" data-k="'+s[1]+'"><span class="v" id="v-'+s[1]+'"></span></div>';
+    });
+    h+='<div class="result"><span>预测'+(ielts?'总 band':'总分')+'</span><b id="estOut">—</b><span id="estNote"></span></div></div>';
+    return h;
+  }
+  function bindEstimator(){
+    var ielts=exam==="ielts";
+    var inputs=[].slice.call(document.querySelectorAll(".est input[type=range]"));
+    function calc(){
+      inputs.forEach(function(i){ document.getElementById("v-"+i.dataset.k).textContent=i.value+(ielts?"":"%"); });
+      if(ielts){
+        var avg=inputs.reduce(function(s,i){return s+parseFloat(i.value);},0)/inputs.length;
+        var band=Math.round(avg*2)/2;
+        document.getElementById("estOut").textContent=band.toFixed(1);
+        document.getElementById("estNote").textContent="四项平均，取最近 0.5";
+      }else{
+        var w={lis:248.5,read:248.5,wri:106.5,tra:106.5},total=0;
+        inputs.forEach(function(i){ total+=w[i.dataset.k]*(parseFloat(i.value)/100); });
+        var t=Math.round(total);
+        document.getElementById("estOut").textContent=t;
+        document.getElementById("estNote").textContent=(t>=425?"已过线 ✓（≥425）":"距 425 还差 "+(425-t)+" 分");
+      }
+    }
+    inputs.forEach(function(i){ i.addEventListener("input",calc); }); calc();
+  }
+
+  open(qp.get("type")||"real");
+})();
+</script>
+</body>
+</html>

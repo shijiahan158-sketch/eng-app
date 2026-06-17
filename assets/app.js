@@ -54,6 +54,17 @@ if (document.getElementById("examLabel")) {
   const cs = document.getElementById("contStudy"); if (cs) cs.addEventListener("click", goStudy);
   const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
 
+  // 按题型学习（听力/阅读/写作/翻译）+ 真题实战 → 题库页 tests.html
+  const goTest = type => { location.href = "tests.html?type=" + type + "&exam=" + code; };
+  [["lis","listening"],["read","reading"],["wri","writing"],["tra","translation"]].forEach(([cls,type]) => {
+    const el = document.querySelector(".tcard." + cls);
+    if (el) { el.style.cursor = "pointer"; el.addEventListener("click", () => goTest(type)); }
+  });
+  [["goReal","real"],["goMock","mock"],["goScore","score"]].forEach(([id,type]) => {
+    const el = document.getElementById(id);
+    if (el) { el.style.cursor = "pointer"; el.addEventListener("click", () => goTest(type)); }
+  });
+
   // 顶部导航高亮当前考试
   document.querySelectorAll('.nav-links a[data-exam]').forEach(a => a.classList.toggle("active", MAP[a.dataset.exam] === level));
 

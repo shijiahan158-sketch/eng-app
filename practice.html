@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#4f46e5" />
+<title>练习 · EngHub</title>
+<script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="m">📚</span> EngHub</a>
+  <nav class="nav-links" id="navLinks">
+    <a href="index.html">首页</a>
+    <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
+    <a href="dashboard.html?exam=cet6" data-exam="cet6">六级</a>
+    <a href="dashboard.html?exam=ielts" data-exam="ielts">雅思</a>
+  </nav>
+  <div class="nav-right">
+    <div class="nav-search">🔍 <input placeholder="搜单词 / 题目…" /></div>
+    <button class="btn-login">登录</button>
+  </div>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</header>
+
+<div class="wrap">
+  <div class="pr-head">
+    <a class="more" id="back">← 返回题库</a>
+    <h1 id="prTitle">练习</h1>
+    <p class="sub" id="prMeta"></p>
+  </div>
+  <div id="prBody"></div>
+</div>
+
+<footer class="foot">EngHub · 示例练习内容，接入真实题库后替换</footer>
+<script src="assets/app.js"></script>
+<script src="data/practice.js"></script>
+<script>
+(function(){
+  var qp=new URLSearchParams(location.search);
+  var type=qp.get("type")||"reading", id=qp.get("id"), exam=qp.get("exam")||"cet4";
+  document.getElementById("back").href="tests.html?type="+type+"&exam="+exam;
+  var list=(window.PRACTICE&&window.PRACTICE[type])||[];
+  var it=list.filter(function(x){return x.id===id;})[0]||list[0];
+  var body=document.getElementById("prBody");
+  if(!it){ document.getElementById("prTitle").textContent="内容准备中"; body.innerHTML='<div class="pp-empty">该练习内容尚未上线</div>'; return; }
+  document.getElementById("prTitle").innerHTML=it.en+' <b style="color:var(--brand)">'+it.zh+'</b>';
+  document.getElementById("prMeta").textContent=[it.part,it.freq,"难度 "+it.level,(it.count?it.count+" 题":"")].filter(Boolean).join(" · ");
+  var esc=function(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");};
+
+  if(type==="reading"){
+    var qs=it.qs||[];
+    body.innerHTML=
+      '<div class="pr-cols">'+
+        '<article class="pr-passage"><h3>Reading Passage</h3>'+
+          (it.passage||"").split("\n").map(function(p){return "<p>"+esc(p)+"</p>";}).join("")+'</article>'+
+        '<div class="pr-qs"><h3>Questions</h3><p class="pr-tip">判断下列陈述：<b>TRUE / FALSE / NOT GIVEN</b></p>'+
+          qs.map(function(q,i){
+            return '<div class="pr-q" data-i="'+i+'"><p>'+(i+1)+". "+esc(q.q)+'</p>'+
+              ["TRUE","FALSE","NOT GIVEN"].map(function(o){return '<label class="pr-opt"><input type="radio" name="q'+i+'" value="'+o+'"> '+o+'</label>';}).join("")+
+              '<div class="pr-fb"></div></div>';
+          }).join("")+
+          '<button class="pp-go" id="submit" style="margin-top:14px">提交答案</button>'+
+          '<div class="pr-score" id="score"></div></div>'+
+      '</div>';
+    document.getElementById("submit").onclick=function(){
+      var right=0;
+      qs.forEach(function(q,i){
+        var sel=document.querySelector('input[name="q'+i+'"]:checked');
+        var fb=document.querySelectorAll('.pr-q')[i].querySelector('.pr-fb');
+        if(!sel){ fb.textContent="（未作答）正确答案："+q.a; fb.className="pr-fb miss"; return; }
+        if(sel.value===q.a){ right++; fb.textContent="✓ 正确"; fb.className="pr-fb ok"; }
+        else { fb.textContent="✗ 你选 "+sel.value+"，正确答案："+q.a; fb.className="pr-fb no"; }
+      });
+      document.getElementById("score").textContent="得分："+right+" / "+qs.length;
+    };
+  }
+  else if(type==="listening"){
+    body.innerHTML=
+      '<div class="pr-audio">🎧 <b>音频示例</b>　<button class="pp-go" onclick="alert(\'接入真实音频后可播放\')">▶ 播放</button>'+
+      (it.transcript? '　<button class="btn-ghost2" id="tgT">显示/隐藏原文</button>':'')+'</div>'+
+      (it.transcript? '<pre class="pr-transcript" id="tr" style="display:none">'+esc(it.transcript)+'</pre>':'')+
+      (it.qs&&it.qs.length?
+        '<div class="pr-qs"><h3>Questions（填空）</h3>'+it.qs.map(function(q,i){
+          return '<div class="pr-q" data-i="'+i+'"><p>'+(i+1)+". "+esc(q.q)+'</p><input class="pr-fill" type="text" placeholder="填写答案"><div class="pr-fb"></div></div>';
+        }).join("")+'<button class="pp-go" id="submitL" style="margin-top:14px">提交答案</button><div class="pr-score" id="scoreL"></div></div>'
+        : '<div class="pp-empty">本节练习内容准备中</div>');
+    var tg=document.getElementById("tgT"); if(tg) tg.onclick=function(){var tr=document.getElementById("tr"); tr.style.display=tr.style.display==="none"?"block":"none";};
+    var sl=document.getElementById("submitL");
+    if(sl) sl.onclick=function(){
+      var right=0,qs=it.qs;
+      qs.forEach(function(q,i){
+        var inp=document.querySelectorAll(".pr-fill")[i], fb=document.querySelectorAll(".pr-q")[i].querySelector(".pr-fb");
+        var v=(inp.value||"").trim().toLowerCase();
+        if(v===String(q.a).toLowerCase()){ right++; fb.textContent="✓ 正确"; fb.className="pr-fb ok"; }
+        else { fb.textContent="✗ 正确答案："+q.a; fb.className="pr-fb no"; }
+      });
+      document.getElementById("scoreL").textContent="得分："+right+" / "+qs.length;
+    };
+  }
+  else if(type==="writing"){
+    body.innerHTML=
+      '<div class="pr-prompt"><h3>📝 题目</h3><p>'+esc(it.prompt)+'</p></div>'+
+      '<textarea class="pr-write" id="essay" placeholder="在这里写你的作文…"></textarea>'+
+      '<div class="pr-wrow"><span class="pr-wc" id="wc">0 词</span>'+
+      (it.model? '<button class="btn-ghost2" id="tgM">查看参考范文</button>':'')+'</div>'+
+      (it.model? '<div class="pr-model" id="model" style="display:none"><h3>参考范文（节选）</h3><p>'+esc(it.model)+'</p></div>':'');
+    var ess=document.getElementById("essay");
+    ess.addEventListener("input",function(){ var n=(ess.value.trim().match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)||[]).length; document.getElementById("wc").textContent=n+" 词"; });
+    var tm=document.getElementById("tgM"); if(tm) tm.onclick=function(){var m=document.getElementById("model"); m.style.display=m.style.display==="none"?"block":"none";};
+  }
+  else if(type==="translation"){
+    body.innerHTML=
+      '<div class="pr-prompt"><h3>🔁 原文（汉译英）</h3><p>'+esc(it.src)+'</p></div>'+
+      '<textarea class="pr-write" id="trans" placeholder="在这里写你的英文译文…"></textarea>'+
+      '<div class="pr-wrow"><span class="pr-wc" id="wc">0 词</span>'+
+      (it.ref? '<button class="btn-ghost2" id="tgR">查看参考译文</button>':'')+'</div>'+
+      (it.ref? '<div class="pr-model" id="ref" style="display:none"><h3>参考译文</h3><p>'+esc(it.ref)+'</p></div>':'');
+    var tr2=document.getElementById("trans");
+    tr2.addEventListener("input",function(){ var n=(tr2.value.trim().match(/[A-Za-z]+(?:'[A-Za-z]+)?/g)||[]).length; document.getElementById("wc").textContent=n+" 词"; });
+    var trb=document.getElementById("tgR"); if(trb) trb.onclick=function(){var r=document.getElementById("ref"); r.style.display=r.style.display==="none"?"block":"none";};
+  }
+  else { // real / mock 整套
+    body.innerHTML='<div class="pr-prompt"><h3>整套试卷</h3><p>按顺序完成下列部分，模拟真实考试。</p></div>'+
+      '<div class="qgrid">'+(it.sections||["听力","阅读","写作","翻译"]).map(function(s){
+        var map={"听力":"listening","阅读":"reading","写作":"writing","翻译":"translation"};
+        return '<a class="qcard" href="tests.html?type='+(map[s]||"reading")+'&exam='+exam+'"><h4>'+s+'</h4><div class="qc-meta">进入该部分练习</div><span class="qc-go">开始 →</span></a>';
+      }).join("")+'</div>';
+  }
+})();
+</script>
+</body>
+</html>
