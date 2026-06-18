@@ -3,68 +3,116 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#4f46e5" />
+<meta name="theme-color" content="#caa86a" />
 <title>我的笔记 · EngHub</title>
 <script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
-<link rel="stylesheet" href="assets/style.css" />
 <style>
-  .nb-wrap{max-width:880px;margin:0 auto;padding:24px clamp(16px,4vw,24px) 60px}
-  .nb-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-  .nb-head h1{font-size:clamp(1.4rem,3.4vw,2rem);font-weight:800}
-  .nb-head .sub{color:var(--dim);margin-top:4px}
-  .nb-editor{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px}
-  .nb-editor textarea{width:100%;min-height:120px;resize:vertical;border:0;outline:none;background:none;color:var(--ink);font-size:1rem;line-height:1.7;font-family:inherit}
-  .nb-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
-  .nb-bar .hint{color:var(--dim);font-size:.82rem}
-  .nb-save{border:0;cursor:pointer;padding:9px 22px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-weight:700}
-  .nb-save:disabled{opacity:.5;cursor:default}
-  .nb-list{margin-top:22px;display:grid;gap:14px}
-  .nb-card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;position:relative}
-  .nb-card .meta{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--dim);font-size:.78rem;margin-bottom:8px}
-  .nb-card .body{white-space:pre-wrap;word-break:break-word;line-height:1.7}
-  .nb-del{border:0;background:none;color:var(--dim);cursor:pointer;font-size:.82rem;font-weight:700}
-  .nb-del:hover{color:#ef4444}
-  .nb-empty{text-align:center;color:var(--dim);padding:46px 20px;background:var(--card);border:1px dashed var(--line);border-radius:16px}
-  .nb-login{text-align:center;color:var(--dim);background:color-mix(in srgb,var(--brand) 7%,var(--card));border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:18px;font-size:.9rem}
-  .nb-login b{color:var(--brand);cursor:pointer;text-decoration:underline}
+:root{
+  --desk:#d8c9a8; --paper:#fbf7ec; --ink:#2c3a52; --ink-soft:#5b6a82; --red:#d4756b;
+  --rule:#cfe0f2; --tape:rgba(255,210,120,.6); --accent:#3b6ea5; --hl:#ffe27a; --ring:#b39b70;
+  --hand:"Segoe Print","Bradley Hand","Comic Sans MS","Chalkboard SE","Kaiti SC","STKaiti","KaiTi","楷体",cursive;
+  --shadow:0 20px 55px rgba(70,52,20,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",Roboto,sans-serif;color:var(--ink);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased;
+  background:radial-gradient(1000px 700px at 50% -10%, #e7dcc1, transparent 60%),repeating-linear-gradient(45deg,#d8c9a8 0 22px,#d3c3a1 22px 44px);padding:34px 16px 80px;}
+a{text-decoration:none;color:inherit}
+.hand{font-family:var(--hand)}
+.hl{background:linear-gradient(transparent 58%, var(--hl) 58%); padding:0 2px;}
+
+.book{position:relative;max-width:940px;margin:0 auto;background-color:var(--paper);
+  background-image:repeating-linear-gradient(var(--paper) 0 33px, var(--rule) 33px 34px);background-position:0 96px;
+  border-radius:6px;box-shadow:var(--shadow);padding:54px 38px 58px 78px;}
+.book::before{content:"";position:absolute;left:58px;top:0;bottom:0;width:2px;background:var(--red);opacity:.55}
+.spiral{position:absolute;top:-12px;left:0;right:0;height:24px;
+  background-image:radial-gradient(circle 11px at 14px 12px, transparent 0 8px, var(--ring) 8px 11px, transparent 11px);
+  background-size:42px 24px;background-repeat:repeat-x;background-position:center;filter:drop-shadow(0 2px 1px rgba(0,0,0,.15));}
+
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.title{font-size:clamp(2rem,6vw,3rem);font-weight:800}
+.title .u{position:relative}
+.title .u::after{content:"";position:absolute;left:-2px;right:-6px;bottom:-6px;height:7px;border-radius:6px;background:var(--red);opacity:.55;transform:rotate(-1deg)}
+.sub{color:var(--ink-soft);font-size:1.1rem;margin-top:10px}
+/* 顶部账号 / 返回 */
+.topbar{display:flex;align-items:center;gap:10px;font-family:var(--hand)}
+.topbar a.home{color:var(--accent);font-size:1.05rem}
+.btn-login{font-family:var(--hand);font-size:1.05rem;color:#fff;background:var(--accent);border:0;cursor:pointer;
+  padding:8px 16px;border-radius:6px;box-shadow:3px 4px 10px rgba(0,0,0,.16);transform:rotate(-1.5deg)}
+.btn-login:hover{transform:rotate(0)}
+
+.tabs{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+.tab{font-family:var(--hand);font-weight:700;font-size:1.2rem;color:#fff;padding:12px 20px;border-radius:4px;box-shadow:3px 5px 12px rgba(0,0,0,.16);cursor:pointer;transition:transform .12s}
+.tab:hover{transform:translateY(-3px) rotate(0)}
+.tab.t4{background:#5b86c7;transform:rotate(-2deg)}
+.tab.t6{background:#8b6fc0;transform:rotate(1.5deg)}
+.tab.ti{background:#cf7a55;transform:rotate(-1deg)}
+
+/* 写新笔记 */
+.writer{margin-top:34px}
+.writer .lab{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft);margin-bottom:8px}
+.writer textarea{width:100%;min-height:110px;resize:vertical;border:0;outline:none;background:rgba(255,255,255,.45);
+  border-radius:6px;padding:14px 16px;font-family:var(--hand);font-size:1.35rem;color:var(--ink);line-height:1.9;
+  box-shadow:inset 0 0 0 1.5px rgba(80,60,30,.18)}
+.writer .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.writer .hint{font-family:var(--hand);color:var(--ink-soft)}
+.pin-btn{font-family:var(--hand);font-size:1.25rem;font-weight:700;color:#fff;background:var(--red);border:0;cursor:pointer;
+  padding:9px 22px;border-radius:6px;box-shadow:3px 5px 12px rgba(0,0,0,.18);transform:rotate(-1.5deg)}
+.pin-btn:hover{transform:rotate(0)}
+
+.section-t{font-family:var(--hand);font-size:1.5rem;font-weight:800;margin:38px 0 14px;display:flex;align-items:center;gap:10px}
+.section-t .cnt{font-size:1rem;color:var(--ink-soft)}
+
+.notes{display:flex;flex-wrap:wrap;gap:20px;align-content:flex-start}
+.note{position:relative;width:190px;min-height:150px;padding:22px 16px 16px;border-radius:2px;
+  box-shadow:3px 6px 14px rgba(0,0,0,.16);font-family:var(--hand);font-size:1.18rem;color:#3a341c;word-break:break-word;white-space:pre-wrap;line-height:1.6}
+.note::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-3deg);width:64px;height:20px;background:var(--tape);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.note .date{position:absolute;bottom:6px;right:10px;font-size:.78rem;color:rgba(60,50,20,.55)}
+.note .del{position:absolute;top:6px;right:9px;cursor:pointer;color:rgba(60,50,20,.5);font-size:1.1rem;font-weight:700;line-height:1}
+.note .del:hover{color:var(--red)}
+.note.c0{background:#fff3a8;transform:rotate(-3deg)}
+.note.c1{background:#bde6c4;transform:rotate(2deg)}
+.note.c2{background:#bfe0f5;transform:rotate(-1.5deg)}
+.note.c3{background:#f7c9d2;transform:rotate(1.5deg)}
+.note.c4{background:#e7d6f5;transform:rotate(-2deg)}
+.empty{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft);padding:20px 4px}
+
+.foot{text-align:center;color:#7a6d4f;font-family:var(--hand);font-size:1.05rem;margin-top:34px}
+@media(max-width:720px){ .book{padding:50px 22px 50px 60px} .book::before{left:42px} .note{width:46%} }
 </style>
 </head>
 <body>
-<header class="nav">
-  <a class="brand" href="index.html"><span class="m">📚</span> EngHub</a>
-  <nav class="nav-links" id="navLinks">
-    <a href="index.html">首页</a>
-    <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
-    <a href="dashboard.html?exam=cet6" data-exam="cet6">六级</a>
-    <a href="dashboard.html?exam=ielts" data-exam="ielts">雅思</a>
-  </nav>
-  <div class="nav-right">
-    <div class="nav-search">🔍 <input placeholder="搜单词 / 题目…" /></div>
-    <button class="btn-login">登录</button>
-  </div>
-  <button class="nav-toggle" id="navToggle">☰</button>
-</header>
+<div class="book">
+  <div class="spiral"></div>
 
-<div class="nb-wrap">
-  <div class="nb-head">
-    <div><h1>📒 我的笔记</h1><p class="sub">随手记考点、好句、易错点 —— 登录后自动云端保存，换设备也在。</p></div>
-    <span class="badge" id="noteCount"></span>
-  </div>
-
-  <div class="nb-login" id="loginTip" style="display:none">还没登录，笔记只存在这台设备。<b id="tipLogin">点此登录</b> 后即可云端同步。</div>
-
-  <div class="nb-editor">
-    <textarea id="editor" placeholder="写点什么…例：be supposed to 表示“理应/被期望”，常用于口语。"></textarea>
-    <div class="nb-bar">
-      <span class="hint" id="saveHint"></span>
-      <button class="nb-save" id="saveBtn">保存笔记</button>
+  <div class="head">
+    <div>
+      <h1 class="title hand">📒 English <span class="u">学习笔记</span></h1>
+      <p class="sub hand">随手记考点、好句、易错点 —— 登录后自动云端保存，换设备也在 ✍️</p>
+    </div>
+    <div class="topbar">
+      <a class="home" href="index.html">← 首页</a>
+      <button class="btn-login">登录</button>
     </div>
   </div>
 
-  <div class="nb-list" id="list"></div>
+  <div class="tabs">
+    <a class="tab t4" href="words.html?exam=cet4">📘 四级</a>
+    <a class="tab t6" href="words.html?exam=cet6">📗 六级</a>
+    <a class="tab ti" href="words.html?exam=ielts">📕 雅思</a>
+  </div>
+
+  <div class="writer">
+    <div class="lab">✎ 写一条贴上去</div>
+    <textarea id="editor" placeholder="例：be supposed to 表示“理应/被期望”，常用于口语。"></textarea>
+    <div class="row"><span class="hint" id="hint"></span><button class="pin-btn" id="saveBtn">贴上去 📌</button></div>
+  </div>
+
+  <div class="section-t">📌 我的小本本 <span class="cnt" id="cnt"></span></div>
+  <div class="notes" id="notes"></div>
+
+  <div class="foot">—— 翻到下一页，继续加油 ——</div>
 </div>
 
-<footer class="foot">EngHub · 我的笔记</footer>
 <script src="assets/app.js"></script>
 <script src="assets/cloud-auth.js"></script>
 <script>
@@ -72,38 +120,26 @@
   var KEY="engapp-notes";
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ return []; } }
   function save(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); if(window.CloudAuth&&CloudAuth.isLoggedIn()) CloudAuth.syncUp(); }
-  function fmt(ts){ var d=new Date(ts); return (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
-
-  var listEl=document.getElementById("list"), cntEl=document.getElementById("noteCount");
+  function fmt(ts){ var d=new Date(ts); return (d.getMonth()+1)+"/"+d.getDate(); }
+  function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  var notesEl=document.getElementById("notes"), cntEl=document.getElementById("cnt");
   function render(){
-    var arr=load();
-    cntEl.textContent=arr.length+" 条";
-    if(!arr.length){ listEl.innerHTML='<div class="nb-empty">还没有笔记，写下第一条吧 ✍️</div>'; return; }
-    listEl.innerHTML=arr.map(function(n){
-      return '<div class="nb-card"><div class="meta"><span>'+fmt(n.ts)+'</span><button class="nb-del" data-id="'+n.id+'">删除</button></div>'+
-        '<div class="body">'+String(n.text).replace(/&/g,"&amp;").replace(/</g,"&lt;")+'</div></div>';
+    var arr=load(); cntEl.textContent="共 "+arr.length+" 条";
+    if(!arr.length){ notesEl.innerHTML='<div class="empty">还没有便签，写下第一条贴上去吧 ✍️</div>'; return; }
+    notesEl.innerHTML=arr.map(function(n,i){
+      return '<div class="note c'+(i%5)+'"><span class="del" data-id="'+n.id+'">×</span>'+esc(n.text)+'<span class="date">'+fmt(n.ts)+'</span></div>';
     }).join("");
-    listEl.querySelectorAll(".nb-del").forEach(function(b){ b.onclick=function(){ var arr=load().filter(function(x){return String(x.id)!==b.dataset.id;}); save(arr); render(); }; });
+    notesEl.querySelectorAll(".del").forEach(function(b){ b.onclick=function(){ save(load().filter(function(x){return String(x.id)!==b.dataset.id;})); render(); }; });
   }
-
   document.getElementById("saveBtn").onclick=function(){
     var t=document.getElementById("editor").value.trim(); if(!t) return;
-    var arr=load(); arr.unshift({ id: Date.now()+""+Math.floor(Math.random()*1000), text:t, ts:Date.now() }); save(arr);
+    var arr=load(); arr.unshift({id:Date.now()+""+Math.floor(Math.random()*1000), text:t, ts:Date.now()}); save(arr);
     document.getElementById("editor").value="";
-    var h=document.getElementById("saveHint"); h.textContent="已保存 ✓"; setTimeout(function(){h.textContent="";},1500);
+    var h=document.getElementById("hint"); h.textContent="已贴上 ✓"; setTimeout(function(){h.textContent="";},1500);
     render();
   };
-
-  function refreshTip(){
-    var inLogin=window.CloudAuth&&CloudAuth.isLoggedIn();
-    document.getElementById("loginTip").style.display=inLogin?"none":"block";
-  }
-  var tl=document.getElementById("tipLogin"); if(tl) tl.onclick=function(){ if(window.CloudAuth) CloudAuth.open(); };
-  // 登录后云端数据会写入本地，刷新列表
-  if(window.CloudAuth) CloudAuth.onLogin=function(){ render(); refreshTip(); };
-  refreshTip(); render();
-  // 登录态下，cloud-auth 在页面加载时会 syncDown 合并云端数据，稍后再渲染一次
-  setTimeout(render, 1200);
+  if(window.CloudAuth) CloudAuth.onLogin=function(){ render(); };
+  render(); setTimeout(render,1200); // 登录后云端笔记合并到本地再刷新
 })();
 </script>
 </body>
