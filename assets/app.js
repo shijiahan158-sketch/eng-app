@@ -53,6 +53,8 @@ if (document.getElementById("examLabel")) {
   const gv = document.getElementById("goVocab"); if (gv) { gv.style.cursor = "pointer"; gv.addEventListener("click", goList); }
   const cs = document.getElementById("contStudy"); if (cs) cs.addEventListener("click", goStudy);
   const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
+  const gm = document.getElementById("goMistakes"); if (gm) { gm.style.cursor = "pointer"; gm.addEventListener("click", () => { location.href = "mistakes.html"; }); }
+  const gw = document.getElementById("goWords"); if (gw) { gw.style.cursor = "pointer"; gw.addEventListener("click", () => { location.href = "words.html?exam=" + code; }); }
 
   // 按题型学习（听力/阅读/写作/翻译）+ 真题实战 → 题库页 tests.html
   const goTest = type => { location.href = "tests.html?type=" + type + "&exam=" + code; };
@@ -72,6 +74,48 @@ if (document.getElementById("examLabel")) {
   function renderCD(){ const {days,t}=nextExam(); document.getElementById("days").textContent=days; document.getElementById("examLabel").textContent=t.getFullYear()+" 年 "+(t.getMonth()+1)+" 月"+level; }
   renderCD();
 
+  // ===== 打卡 + 今日计划（持久化 + 云端同步）=====
+  const sync = () => { if (window.CloudAuth && CloudAuth.isLoggedIn()) CloudAuth.syncUp(); };
+  const pad = n => String(n).padStart(2, "0");
+  const dstr = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  const today = dstr(new Date());
+
+  // 访问即打卡
+  const CK = "engapp-checkin";
+  const getCK = () => { try { return JSON.parse(localStorage.getItem(CK) || "[]"); } catch (e) { return []; } };
+  (function () { const a = getCK(); if (a.indexOf(today) < 0) { a.push(today); localStorage.setItem(CK, JSON.stringify(a)); sync(); } })();
+
+  function renderWeek() {
+    const wk = document.getElementById("week"); if (!wk) return;
+    const ck = getCK(), names = ["一","二","三","四","五","六","日"];
+    const now = new Date(), off = (now.getDay() + 6) % 7, mon = new Date(now); mon.setDate(now.getDate() - off);
+    let html = "";
+    for (let i = 0; i < 7; i++) { const x = new Date(mon); x.setDate(mon.getDate() + i); const ds = dstr(x); const done = ck.indexOf(ds) >= 0, isT = ds === today;
+      html += '<div class="day ' + (done ? "done " : "") + (isT ? "today" : "") + '"><span>' + names[i] + '</span><div class="d">' + (done ? "✓" : (isT ? "今" : "")) + "</div></div>"; }
+    wk.innerHTML = html;
+    let s = 0, d = new Date(); while (ck.indexOf(dstr(d)) >= 0) { s++; d.setDate(d.getDate() - 1); }
+    const sb = document.getElementById("streakBadge"); if (sb) sb.textContent = "连续 " + s + " 天";
+    const k = document.querySelector(".kpi b"); if (k) k.textContent = s;
+  }
+  renderWeek();
+
+  // 今日计划：勾选状态按天持久化
+  const PL = "engapp-plan";
+  const getPL = () => { try { return JSON.parse(localStorage.getItem(PL) || "{}"); } catch (e) { return {}; } };
   const todo = document.getElementById("todo");
-  if (todo) todo.addEventListener("click", e => { const li=e.target.closest("li"); if(li){ li.classList.toggle("done"); li.querySelector(".b").textContent = li.classList.contains("done")?"✓":""; } });
+  if (todo) {
+    const lis = [].slice.call(todo.querySelectorAll("li"));
+    const saved = getPL()[today];
+    if (saved) lis.forEach((li, i) => { const d = saved.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; });
+    todo.addEventListener("click", e => {
+      const li = e.target.closest("li"); if (!li) return;
+      li.classList.toggle("done"); const b = li.querySelector(".b"); if (b) b.textContent = li.classList.contains("done") ? "✓" : "";
+      const done = []; lis.forEach((l, i) => { if (l.classList.contains("done")) done.push(i); });
+      const p = getPL(); p[today] = done; localStorage.setItem(PL, JSON.stringify(p)); sync();
+    });
+  }
+
+  // 登录后云端数据合并到本地 → 重新渲染打卡/计划
+  if (window.CloudAuth) CloudAuth.onLogin = function () { renderWeek(); if (todo) { const s2 = getPL()[today] || []; [].slice.call(todo.querySelectorAll("li")).forEach((li, i) => { const d = s2.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; }); } };
+  setTimeout(renderWeek, 1200); // 等 syncDown 合并云端打卡后再刷新
 }

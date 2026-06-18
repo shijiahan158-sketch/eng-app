@@ -66,15 +66,27 @@
           '<div class="pr-score" id="score"></div></div>'+
       '</div>';
     document.getElementById("submit").onclick=function(){
-      var right=0;
+      var right=0, wrong=[];
       qs.forEach(function(q,i){
         var sel=document.querySelector('input[name="q'+i+'"]:checked');
         var fb=document.querySelectorAll('.pr-q')[i].querySelector('.pr-fb');
-        if(!sel){ fb.textContent="（未作答）正确答案："+q.a; fb.className="pr-fb miss"; return; }
+        if(!sel){ fb.textContent="（未作答）正确答案："+q.a; fb.className="pr-fb miss"; wrong.push({i:i,q:q.q,a:q.a,your:""}); return; }
         if(sel.value===q.a){ right++; fb.textContent="✓ 正确"; fb.className="pr-fb ok"; }
-        else { fb.textContent="✗ 你选 "+sel.value+"，正确答案："+q.a; fb.className="pr-fb no"; }
+        else { fb.textContent="✗ 你选 "+sel.value+"，正确答案："+q.a; fb.className="pr-fb no"; wrong.push({i:i,q:q.q,a:q.a,your:sel.value}); }
       });
       document.getElementById("score").textContent="得分："+right+" / "+qs.length;
+      // 记录做题成绩 + 错题入库
+      try{
+        var quiz=JSON.parse(localStorage.getItem("engapp-quiz")||"{}");
+        quiz[it.id]={title:it.zh||it.en,score:right,total:qs.length,ts:Date.now()};
+        localStorage.setItem("engapp-quiz",JSON.stringify(quiz));
+        if(wrong.length){
+          var mk=JSON.parse(localStorage.getItem("engapp-mistakes")||"[]");
+          wrong.forEach(function(w){ mk.unshift({id:it.id+"-"+w.i+"-"+Date.now(), title:(it.zh||it.en), type:"阅读", q:w.q, correct:w.a, your:w.your, ts:Date.now()}); });
+          localStorage.setItem("engapp-mistakes",JSON.stringify(mk));
+        }
+        if(window.CloudAuth&&CloudAuth.isLoggedIn()) CloudAuth.syncUp();
+      }catch(e){}
     };
   }
   else if(type==="listening"){

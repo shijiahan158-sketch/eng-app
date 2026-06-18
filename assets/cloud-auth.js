@@ -57,6 +57,54 @@
   function logout() { localStorage.removeItem(TK); }
 
   /* ============================================================
+     云端数据同步（users_data，每个用户一份文档 _id=用户id）
+     ============================================================ */
+  var ENVID = "enghub-d6g6cy0i76d568205";
+  var EXAMS = ["cet4", "cet6", "ielts"];
+  function dbCall(action, params) {
+    var at = accessToken(); if (!at) return Promise.reject(new Error("未登录"));
+    var body = Object.assign({ action: action, dataVersion: "2020-01-10", env: ENVID, access_token: at, collectionName: "users_data" }, params);
+    return fetch(BASE + "/web", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).then(function (j) { if (j.code) throw new Error(j.message || j.code); return j.data; });
+  }
+  function loadData() { return dbCall("database.queryDocument", { query: {}, queryType: "DOC" }).then(function (d) { return (d && d.list && d.list[0]) || null; }); }
+  function saveData(obj) { var u = user(); if (!u) return Promise.reject(new Error("未登录")); return dbCall("database.updateDocument", { query: { _id: u.sub }, data: obj, queryType: "DOC", multi: false, merge: true, upsert: true }); }
+  function readJSON(k, def) { try { return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); } catch (e) { return def; } }
+  function gather() {
+    var s = session() || {}, study = {};
+    EXAMS.forEach(function (ex) { study[ex] = readJSON("study-" + ex + "-results", {}); });
+    return {
+      _id: s.sub, name: s.name || "", study: study,
+      notes: readJSON("engapp-notes", []),       // 笔记
+      mistakes: readJSON("engapp-mistakes", []),  // 错题本
+      quiz: readJSON("engapp-quiz", {}),          // 做题记录
+      checkin: readJSON("engapp-checkin", []),    // 打卡
+      plan: readJSON("engapp-plan", {}),          // 今日计划
+      updatedAt: Date.now()
+    };
+  }
+  function mergeById(cloudArr, localArr) {   // 按 id 合并去重（数组类，如笔记/错题）
+    var map = {};
+    (cloudArr || []).concat(localArr || []).forEach(function (x) { if (x && x.id != null) map[x.id] = x; }); // 本地覆盖同 id
+    return Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  }
+  function applyData(doc) {
+    if (!doc) return;
+    if (doc.name) { var s = session(); if (s) { s.name = doc.name; localStorage.setItem(TK, JSON.stringify(s)); } }
+    if (doc.study) EXAMS.forEach(function (ex) {
+      localStorage.setItem("study-" + ex + "-results", JSON.stringify(Object.assign({}, doc.study[ex] || {}, readJSON("study-" + ex + "-results", {})))); // 对象合并，本地优先
+    });
+    if (doc.notes) localStorage.setItem("engapp-notes", JSON.stringify(mergeById(doc.notes, readJSON("engapp-notes", []))));
+    if (doc.mistakes) localStorage.setItem("engapp-mistakes", JSON.stringify(mergeById(doc.mistakes, readJSON("engapp-mistakes", []))));
+    if (doc.quiz) localStorage.setItem("engapp-quiz", JSON.stringify(Object.assign({}, doc.quiz, readJSON("engapp-quiz", {}))));
+    if (doc.checkin) { var set = {}; doc.checkin.concat(readJSON("engapp-checkin", [])).forEach(function (x) { set[x] = 1; }); localStorage.setItem("engapp-checkin", JSON.stringify(Object.keys(set).sort())); }
+    if (doc.plan) localStorage.setItem("engapp-plan", JSON.stringify(Object.assign({}, doc.plan, readJSON("engapp-plan", {}))));
+  }
+  var syncing = false;
+  function syncDown() { if (!user()) return Promise.resolve(); return loadData().then(function (d) { applyData(d); renderNav(); }).catch(function () {}); }
+  function syncUp() { if (!user() || syncing) return Promise.resolve(); syncing = true; return saveData(gather()).catch(function () {}).then(function () { syncing = false; }); }
+
+  /* ============================================================
      UI：登录/注册弹窗 + 顶部按钮
      ============================================================ */
   function injectStyle() {
@@ -165,12 +213,16 @@
   }
 
   function finishAuth(m) {
-    setTimeout(function () { m.classList.remove("open"); renderNav(); if (window.CloudAuth.onLogin) window.CloudAuth.onLogin(user()); }, 600);
+    setTimeout(function () {
+      m.classList.remove("open"); renderNav();
+      syncDown().then(syncUp);   // 登录后：拉云端合并 → 再把合并结果推上去
+      if (window.CloudAuth.onLogin) window.CloudAuth.onLogin(user());
+    }, 600);
   }
   function openModal() { modal().classList.add("open"); }
 
   function setName(newName) {
-    var s = session(); if (!s) return; s.name = newName; localStorage.setItem(TK, JSON.stringify(s)); renderNav();
+    var s = session(); if (!s) return; s.name = newName; localStorage.setItem(TK, JSON.stringify(s)); renderNav(); syncUp();
   }
 
   /* ---------- 用户下拉菜单 ---------- */
@@ -245,9 +297,14 @@
     user: user, accessToken: accessToken, isLoggedIn: function () { return !!user(); },
     open: openModal, logout: function () { logout(); renderNav(); },
     sendCode: sendCode, register: register, login: login,
-    onLogin: null  // 页面可覆盖：登录后回调（用于触发数据同步）
+    loadData: loadData, saveData: saveData, syncUp: syncUp, syncDown: syncDown,
+    onLogin: null  // 页面可覆盖：登录后回调
   };
 
-  if (document.readyState !== "loading") renderNav();
-  else document.addEventListener("DOMContentLoaded", renderNav);
+  function init() { renderNav(); if (user()) syncDown(); }
+  if (document.readyState !== "loading") init();
+  else document.addEventListener("DOMContentLoaded", init);
+  // 离开页面/切到后台时把本地数据推送到云端
+  window.addEventListener("pagehide", syncUp);
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") syncUp(); });
 })();
