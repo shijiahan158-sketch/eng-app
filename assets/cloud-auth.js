@@ -61,11 +61,35 @@
      ============================================================ */
   var ENVID = "enghub-d6g6cy0i76d568205";
   var EXAMS = ["cet4", "cet6", "ielts"];
+  // 用 refresh_token 换新 access_token（access_token 2 小时过期，续期后用户无感）
+  function refresh() {
+    var s = session(); if (!s || !s.refresh_token || !s.access_token) return Promise.reject(new Error("no refresh"));
+    var prevName = s.name, prevRT = s.refresh_token;
+    return fetch(BASE + "/auth/v1/token", {
+      method: "POST", headers: { "Authorization": "Bearer " + s.access_token, "Content-Type": "application/json" },
+      body: JSON.stringify({ grant_type: "refresh_token", refresh_token: s.refresh_token })
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.error || !j.access_token) throw new Error(j.error_description || "续期失败");
+      var ns = save(j);                                   // 用新 token 更新会话
+      if (!ns.name && prevName) ns.name = prevName;        // 续期 token 可能不带自定义用户名 → 保留原来的
+      if (!j.refresh_token) ns.refresh_token = prevRT;     // 没返回新 refresh_token 就沿用旧的
+      localStorage.setItem(TK, JSON.stringify(ns));
+      return ns;
+    });
+  }
+  // 调用云端前确保 access_token 有效（剩余 <60s 就先续期）
+  function ensureToken() {
+    var s = session(); if (!s) return Promise.resolve();
+    if (s.exp && (s.exp * 1000 - Date.now() > 60000)) return Promise.resolve();
+    return refresh().catch(function () {});
+  }
   function dbCall(action, params) {
-    var at = accessToken(); if (!at) return Promise.reject(new Error("未登录"));
-    var body = Object.assign({ action: action, dataVersion: "2020-01-10", env: ENVID, access_token: at, collectionName: "users_data" }, params);
-    return fetch(BASE + "/web", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json(); }).then(function (j) { if (j.code) throw new Error(j.message || j.code); return j.data; });
+    return ensureToken().then(function () {
+      var at = accessToken(); if (!at) return Promise.reject(new Error("未登录"));
+      var body = Object.assign({ action: action, dataVersion: "2020-01-10", env: ENVID, access_token: at, collectionName: "users_data" }, params);
+      return fetch(BASE + "/web", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); }).then(function (j) { if (j.code) throw new Error(j.message || j.code); return j.data; });
+    });
   }
   function loadData() { return dbCall("database.queryDocument", { query: {}, queryType: "DOC" }).then(function (d) { return (d && d.list && d.list[0]) || null; }); }
   function saveData(obj) { var u = user(); if (!u) return Promise.reject(new Error("未登录")); return dbCall("database.updateDocument", { query: { _id: u.sub }, data: obj, queryType: "DOC", multi: false, merge: true, upsert: true }); }
