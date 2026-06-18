@@ -99,7 +99,7 @@
     EXAMS.forEach(function (ex) { study[ex] = readJSON("study-" + ex + "-results", {}); });
     return {
       _id: s.sub, name: s.name || "", study: study,
-      notes: readJSON("engapp-notes", []),       // 笔记
+      notes: readJSON("engapp-notes", {}),       // 笔记(按笔记本分页，对象)
       mistakes: readJSON("engapp-mistakes", []),  // 错题本
       quiz: readJSON("engapp-quiz", {}),          // 做题记录
       checkin: readJSON("engapp-checkin", []),    // 打卡
@@ -118,7 +118,7 @@
     if (doc.study) EXAMS.forEach(function (ex) {
       localStorage.setItem("study-" + ex + "-results", JSON.stringify(Object.assign({}, doc.study[ex] || {}, readJSON("study-" + ex + "-results", {})))); // 对象合并，本地优先
     });
-    if (doc.notes) localStorage.setItem("engapp-notes", JSON.stringify(mergeById(doc.notes, readJSON("engapp-notes", []))));
+    if (doc.notes) { var ln = readJSON("engapp-notes", {}); if ((doc.notes._at || 0) >= (ln._at || 0)) localStorage.setItem("engapp-notes", JSON.stringify(doc.notes)); } // 笔记：按更新时间取较新(LWW)
     if (doc.mistakes) localStorage.setItem("engapp-mistakes", JSON.stringify(mergeById(doc.mistakes, readJSON("engapp-mistakes", []))));
     if (doc.quiz) localStorage.setItem("engapp-quiz", JSON.stringify(Object.assign({}, doc.quiz, readJSON("engapp-quiz", {}))));
     if (doc.checkin) { var set = {}; doc.checkin.concat(readJSON("engapp-checkin", [])).forEach(function (x) { set[x] = 1; }); localStorage.setItem("engapp-checkin", JSON.stringify(Object.keys(set).sort())); }

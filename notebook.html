@@ -8,8 +8,8 @@
 <script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
 :root{
-  --desk:#d8c9a8; --paper:#fbf7ec; --ink:#2c3a52; --ink-soft:#5b6a82; --red:#d4756b;
-  --rule:#cfe0f2; --accent:#3b6ea5; --hl:#ffe27a; --ring:#b39b70;
+  --paper:#fbf7ec; --ink:#2c3a52; --ink-soft:#5b6a82; --red:#d4756b;
+  --rule:#cfe0f2; --accent:#3b6ea5; --ring:#b39b70;
   --hand:"Segoe Print","Bradley Hand","Comic Sans MS","Chalkboard SE","Kaiti SC","STKaiti","KaiTi","楷体",cursive;
   --shadow:0 20px 55px rgba(70,52,20,.28);
 }
@@ -19,9 +19,7 @@ body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",Roboto,sans-serif;co
 a{text-decoration:none;color:inherit}
 .hand{font-family:var(--hand)}
 
-.book{position:relative;max-width:940px;margin:0 auto;background-color:var(--paper);
-  background-image:repeating-linear-gradient(var(--paper) 0 33px, var(--rule) 33px 34px);background-position:0 150px;
-  border-radius:6px;box-shadow:var(--shadow);padding:54px 38px 58px 78px;min-height:640px;}
+.book{position:relative;max-width:940px;margin:0 auto;background:var(--paper);border-radius:6px;box-shadow:var(--shadow);padding:54px 38px 40px 78px;}
 .book::before{content:"";position:absolute;left:58px;top:0;bottom:0;width:2px;background:var(--red);opacity:.55}
 .spiral{position:absolute;top:-12px;left:0;right:0;height:24px;
   background-image:radial-gradient(circle 11px at 14px 12px, transparent 0 8px, var(--ring) 8px 11px, transparent 11px);
@@ -37,44 +35,29 @@ a{text-decoration:none;color:inherit}
 .btn-login{font-family:var(--hand);font-size:1.05rem;color:#fff;background:var(--accent);border:0;cursor:pointer;padding:8px 16px;border-radius:6px;box-shadow:3px 4px 10px rgba(0,0,0,.16);transform:rotate(-1.5deg)}
 .btn-login:hover{transform:rotate(0)}
 
-/* 三个笔记本 tab */
-.tabs{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
-.tab{font-family:var(--hand);font-weight:700;font-size:1.2rem;color:#fff;padding:12px 20px;border:0;border-radius:4px;box-shadow:3px 5px 12px rgba(0,0,0,.16);cursor:pointer;transition:transform .12s,filter .12s;opacity:.78}
-.tab.t4{background:#5b86c7;transform:rotate(-2deg)}
-.tab.t6{background:#8b6fc0;transform:rotate(1.5deg)}
-.tab.ti{background:#cf7a55;transform:rotate(-1deg)}
+.tabs{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.tab{font-family:var(--hand);font-weight:700;font-size:1.2rem;color:#fff;padding:12px 20px;border:0;border-radius:4px;box-shadow:3px 5px 12px rgba(0,0,0,.16);cursor:pointer;transition:transform .12s,opacity .12s;opacity:.78}
+.tab.t4{background:#5b86c7;transform:rotate(-2deg)} .tab.t6{background:#8b6fc0;transform:rotate(1.5deg)} .tab.ti{background:#cf7a55;transform:rotate(-1deg)}
 .tab:hover{opacity:1;transform:translateY(-2px) rotate(0)}
 .tab.on{opacity:1;transform:translateY(-3px) rotate(0) scale(1.04);box-shadow:0 8px 20px rgba(0,0,0,.25);outline:3px solid rgba(255,255,255,.7)}
 
-/* 写一条 */
-.writer{margin-top:30px}
-.writer .lab{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft);margin-bottom:8px}
-.writer textarea{width:100%;min-height:96px;resize:vertical;border:0;outline:none;background:rgba(255,255,255,.5);border-radius:6px;padding:12px 16px;font-family:var(--hand);font-size:1.3rem;color:var(--ink);line-height:1.8;box-shadow:inset 0 0 0 1.5px rgba(80,60,30,.18)}
-.writer .row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
-.writer .hint{font-family:var(--hand);color:var(--ink-soft)}
-.pin-btn{font-family:var(--hand);font-size:1.2rem;font-weight:700;color:#fff;background:var(--red);border:0;cursor:pointer;padding:9px 22px;border-radius:6px;box-shadow:3px 5px 12px rgba(0,0,0,.18);transform:rotate(-1.5deg)}
-.pin-btn:hover{transform:rotate(0)}
+.pagelab{font-family:var(--hand);font-size:1.2rem;color:var(--ink-soft);margin:26px 0 4px;display:flex;align-items:center;gap:8px}
+/* 一页横线纸，自由书写 */
+.page{display:block;width:100%;min-height:510px;border:0;outline:none;resize:none;background:transparent;
+  font-family:var(--hand);font-size:1.32rem;line-height:34px;color:var(--ink);padding:0 12px 0 26px;
+  background-image:repeating-linear-gradient(transparent 0 33px, var(--rule) 33px 34px);background-attachment:local;}
+.page::placeholder{color:rgba(91,106,130,.55)}
 
-.section-t{font-family:var(--hand);font-size:1.5rem;font-weight:800;margin:32px 0 6px;display:flex;align-items:center;gap:10px}
-.section-t .cnt{font-size:1rem;color:var(--ink-soft)}
-
-/* 笔记按条写在纸上（非便利贴） */
-.entries{margin-top:6px}
-.entry{position:relative;font-family:var(--hand);font-size:1.32rem;color:var(--ink);padding:8px 70px 8px 26px;line-height:34px;border-bottom:1px dashed rgba(120,90,40,.22);white-space:pre-wrap;word-break:break-word;min-height:34px}
-.entry::before{content:"•";position:absolute;left:6px;color:var(--red);opacity:.6}
-.entry .meta{position:absolute;right:30px;top:8px;font-size:.82rem;color:rgba(80,70,40,.55)}
-.entry .del{position:absolute;right:2px;top:6px;cursor:pointer;color:rgba(80,70,40,.45);font-size:1.15rem;font-weight:700}
-.entry .del:hover{color:var(--red)}
-.empty{font-family:var(--hand);font-size:1.3rem;color:var(--ink-soft);padding:24px 4px}
-
-/* 翻页 */
-.pager{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:24px;font-family:var(--hand)}
-.pager button{font-family:var(--hand);font-size:1.1rem;color:var(--accent);background:rgba(255,255,255,.5);border:1.5px solid rgba(80,60,30,.2);border-radius:8px;padding:7px 16px;cursor:pointer}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px;font-family:var(--hand);flex-wrap:wrap}
+.pager button{font-family:var(--hand);font-size:1.05rem;color:var(--accent);background:rgba(255,255,255,.55);border:1.5px solid rgba(80,60,30,.2);border-radius:8px;padding:7px 16px;cursor:pointer}
 .pager button:disabled{opacity:.35;cursor:default}
-.pager .info{color:var(--ink-soft)}
+.pager .info{color:var(--ink-soft);min-width:90px;text-align:center}
+.pager .add{color:#fff;background:var(--red);border-color:var(--red)}
+.pager .del{color:var(--ink-soft)}
+.savetip{font-family:var(--hand);color:#3a9; font-size:.95rem;min-width:60px}
 
-.foot{text-align:center;color:#7a6d4f;font-family:var(--hand);font-size:1.05rem;margin-top:30px}
-@media(max-width:720px){ .book{padding:50px 22px 50px 60px} .book::before{left:42px} .entry{padding-right:56px} }
+.foot{text-align:center;color:#7a6d4f;font-family:var(--hand);font-size:1.05rem;margin-top:22px}
+@media(max-width:720px){ .book{padding:50px 18px 36px 56px} .book::before{left:40px} }
 </style>
 </head>
 <body>
@@ -84,7 +67,7 @@ a{text-decoration:none;color:inherit}
   <div class="head">
     <div>
       <h1 class="title hand">📒 English <span class="u">学习笔记</span></h1>
-      <p class="sub hand">随手记考点、好句、易错点 —— 登录后自动云端保存，换设备也在 ✍️</p>
+      <p class="sub hand">像在本子上一样随手写 —— 登录后自动云端保存，换设备也在 ✍️</p>
     </div>
     <div class="topbar">
       <a class="home" href="index.html">← 首页</a>
@@ -98,74 +81,61 @@ a{text-decoration:none;color:inherit}
     <button class="tab ti" data-exam="ielts">📕 雅思</button>
   </div>
 
-  <div class="writer">
-    <div class="lab" id="writerLab">✎ 在「四级」笔记本写一条</div>
-    <textarea id="editor" placeholder="例：be supposed to 表示“理应/被期望”，常用于口语。"></textarea>
-    <div class="row"><span class="hint" id="hint"></span><button class="pin-btn" id="saveBtn">记一条 ✍️</button></div>
+  <div class="pagelab"><span id="nbName">四级</span> 笔记本 · 第 <span id="pNo">1</span> / <span id="pTot">1</span> 页 <span class="savetip" id="savetip"></span></div>
+  <textarea class="page hand" id="page" placeholder="在这一页随便写……单词、长句、考点、心得都行。写满就翻到下一页～"></textarea>
+
+  <div class="pager">
+    <button id="prev">‹ 上一页</button>
+    <span class="info" id="info">第 1 / 1 页</span>
+    <button id="next">下一页 ›</button>
+    <button class="add" id="add">＋ 新一页</button>
+    <button class="del" id="del">🗑 删本页</button>
   </div>
 
-  <div class="section-t">📖 <span id="nbName">四级</span> 笔记 <span class="cnt" id="cnt"></span></div>
-  <div class="entries" id="entries"></div>
-  <div class="pager" id="pager" style="display:none">
-    <button id="prev">‹ 上一页</button><span class="info" id="pageInfo"></span><button id="next">下一页 ›</button>
-  </div>
-
-  <div class="foot">—— 翻到下一页，继续加油 ——</div>
+  <div class="foot">—— 一页页写满，就是进步 ——</div>
 </div>
 
 <script src="assets/app.js"></script>
 <script src="assets/cloud-auth.js"></script>
 <script>
 (function(){
-  var KEY="engapp-notes";   // 扁平数组，每条 {id,text,ts,exam}
+  var KEY="engapp-notes";   // { cet4:[页内容...], cet6:[...], ielts:[...], _at }
   var LABEL={cet4:"四级",cet6:"六级",ielts:"雅思"};
-  var PAGE=6, page=1;
-  var cur=localStorage.getItem("engapp-exam"); var p=new URLSearchParams(location.search).get("exam");
-  if(LABEL[p]) cur=p; if(!LABEL[cur]) cur="cet4";
+  var cur=localStorage.getItem("engapp-exam"); var q=new URLSearchParams(location.search).get("exam");
+  if(LABEL[q]) cur=q; if(!LABEL[cur]) cur="cet4";
+  var idxMap={cet4:0,cet6:0,ielts:0};
 
-  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ return []; } }
-  function save(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); if(window.CloudAuth&&CloudAuth.isLoggedIn()) CloudAuth.syncUp(); }
-  function fmt(ts){ var d=new Date(ts); return (d.getMonth()+1)+"月"+d.getDate()+"日"; }
-  function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
-  function curNotes(){ return load().filter(function(n){return (n.exam||"cet4")===cur;}).sort(function(a,b){return b.ts-a.ts;}); }
+  function obj(){ try{ var o=JSON.parse(localStorage.getItem(KEY)||"{}"); return (o&&typeof o==="object"&&!Array.isArray(o))?o:{}; }catch(e){ return {}; } }
+  function pages(ex){ var a=obj()[ex]; return (a&&a.length)?a:[""]; }
+  function persist(text){ var o=obj(); var a=(o[cur]&&o[cur].length)?o[cur].slice():[""]; a[idxMap[cur]]=text; o[cur]=a; o._at=Date.now(); localStorage.setItem(KEY,JSON.stringify(o)); if(window.CloudAuth&&CloudAuth.isLoggedIn()) CloudAuth.syncUp(); }
 
-  var tabsEl=document.getElementById("tabs"), entriesEl=document.getElementById("entries"),
-      cntEl=document.getElementById("cnt"), pagerEl=document.getElementById("pager");
+  var ta=document.getElementById("page"), info=document.getElementById("info"),
+      pNo=document.getElementById("pNo"), pTot=document.getElementById("pTot"), tip=document.getElementById("savetip");
 
-  function render(){
-    // tab 高亮 + 标题
-    [].forEach.call(tabsEl.querySelectorAll(".tab"), function(b){ b.classList.toggle("on", b.dataset.exam===cur); });
+  function show(){
+    var ps=pages(cur), i=idxMap[cur]; if(i>=ps.length) i=ps.length-1; if(i<0)i=0; idxMap[cur]=i;
+    ta.value=ps[i]||"";
     document.getElementById("nbName").textContent=LABEL[cur];
-    document.getElementById("writerLab").textContent="✎ 在「"+LABEL[cur]+"」笔记本写一条";
-
-    var list=curNotes();
-    cntEl.textContent="共 "+list.length+" 条";
-    var totalPages=Math.max(1, Math.ceil(list.length/PAGE));
-    if(page>totalPages) page=totalPages;
-    if(!list.length){ entriesEl.innerHTML='<div class="empty">这个笔记本还是空的，写下第一条吧 ✍️</div>'; pagerEl.style.display="none"; return; }
-    var slice=list.slice((page-1)*PAGE, page*PAGE);
-    entriesEl.innerHTML=slice.map(function(n){
-      return '<div class="entry">'+esc(n.text)+'<span class="meta">'+fmt(n.ts)+'</span><span class="del" data-id="'+n.id+'">×</span></div>';
-    }).join("");
-    entriesEl.querySelectorAll(".del").forEach(function(b){ b.onclick=function(){ save(load().filter(function(x){return String(x.id)!==b.dataset.id;})); render(); }; });
-    // 翻页
-    if(totalPages>1){ pagerEl.style.display="flex"; document.getElementById("pageInfo").textContent=page+" / "+totalPages;
-      document.getElementById("prev").disabled=page<=1; document.getElementById("next").disabled=page>=totalPages;
-    } else pagerEl.style.display="none";
+    pNo.textContent=i+1; pTot.textContent=ps.length; info.textContent="第 "+(i+1)+" / "+ps.length+" 页";
+    document.getElementById("prev").disabled=i<=0;
+    document.getElementById("next").disabled=i>=ps.length-1;
+    [].forEach.call(document.querySelectorAll(".tab"), function(b){ b.classList.toggle("on", b.dataset.exam===cur); });
   }
 
-  tabsEl.querySelectorAll(".tab").forEach(function(b){ b.onclick=function(){ cur=b.dataset.exam; localStorage.setItem("engapp-exam",cur); page=1; render(); }; });
-  document.getElementById("prev").onclick=function(){ if(page>1){page--;render();} };
-  document.getElementById("next").onclick=function(){ page++; render(); };
-  document.getElementById("saveBtn").onclick=function(){
-    var t=document.getElementById("editor").value.trim(); if(!t) return;
-    var arr=load(); arr.unshift({id:Date.now()+""+Math.floor(Math.random()*1000), text:t, ts:Date.now(), exam:cur}); save(arr);
-    document.getElementById("editor").value=""; page=1;
-    var h=document.getElementById("hint"); h.textContent="已记下 ✓"; setTimeout(function(){h.textContent="";},1500);
-    render();
-  };
-  if(window.CloudAuth) CloudAuth.onLogin=function(){ render(); };
-  render(); setTimeout(render,1200);
+  var timer;
+  ta.addEventListener("input", function(){ clearTimeout(timer); timer=setTimeout(function(){ persist(ta.value); tip.textContent="已保存 ✓"; setTimeout(function(){tip.textContent="";},1200); }, 500); });
+  ta.addEventListener("blur", function(){ persist(ta.value); });
+  window.addEventListener("pagehide", function(){ persist(ta.value); });
+
+  document.querySelectorAll(".tab").forEach(function(b){ b.onclick=function(){ persist(ta.value); cur=b.dataset.exam; localStorage.setItem("engapp-exam",cur); show(); }; });
+  document.getElementById("prev").onclick=function(){ persist(ta.value); if(idxMap[cur]>0){ idxMap[cur]--; show(); } };
+  document.getElementById("next").onclick=function(){ persist(ta.value); if(idxMap[cur]<pages(cur).length-1){ idxMap[cur]++; show(); } };
+  document.getElementById("add").onclick=function(){ persist(ta.value); var o=obj(); var a=(o[cur]&&o[cur].length)?o[cur].slice():[""]; a.push(""); o[cur]=a; o._at=Date.now(); localStorage.setItem(KEY,JSON.stringify(o)); idxMap[cur]=a.length-1; if(window.CloudAuth&&CloudAuth.isLoggedIn())CloudAuth.syncUp(); show(); ta.focus(); };
+  document.getElementById("del").onclick=function(){ var ps=pages(cur); if(ps.length<=1){ if(!confirm("清空本页？"))return; } else if(!confirm("删除当前这一页？"))return;
+    var o=obj(); var a=(o[cur]&&o[cur].length)?o[cur].slice():[""]; a.splice(idxMap[cur],1); if(!a.length)a=[""]; o[cur]=a; o._at=Date.now(); localStorage.setItem(KEY,JSON.stringify(o)); if(idxMap[cur]>=a.length)idxMap[cur]=a.length-1; if(window.CloudAuth&&CloudAuth.isLoggedIn())CloudAuth.syncUp(); show(); };
+
+  if(window.CloudAuth) CloudAuth.onLogin=function(){ show(); };
+  show(); setTimeout(show,1200);   // 登录后云端笔记合并到本地再刷新
 })();
 </script>
 </body>
