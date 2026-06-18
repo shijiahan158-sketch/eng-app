@@ -181,7 +181,7 @@
           '<button class="auth-go" id="btnLogin">登录</button>' +
         '</div>' +
         '<div id="fReg" style="display:none">' +
-          '<label>用户名</label><input id="rName" placeholder="给自己起个名字（字母/数字，可含_）" autocomplete="off">' +
+          '<label>用户名</label><input id="rName" placeholder="6–25位，小写字母开头（如 nihao123）" autocomplete="off">' +
           '<label>邮箱</label><div class="auth-row"><input id="rEmail" type="email" placeholder="you@example.com"><button class="auth-code" id="btnCode">获取验证码</button></div>' +
           '<label>验证码</label><input id="rCode" placeholder="邮箱收到的 6 位码">' +
           '<label>设置密码</label><input id="rPwd" type="password" placeholder="至少 8 位，含字母和数字">' +
@@ -220,7 +220,7 @@
     m.querySelector("#btnReg").onclick = function () {
       var name = m.querySelector("#rName").value.trim(), email = m.querySelector("#rEmail").value.trim(), code = m.querySelector("#rCode").value.trim(), pwd = m.querySelector("#rPwd").value;
       if (!name || !email || !code || !pwd) { setMsg("用户名、邮箱、验证码、密码都要填"); return; }
-      if (!/^[A-Za-z][A-Za-z0-9_]{1,30}$/.test(name)) { setMsg("用户名需字母开头，仅含字母/数字/下划线"); return; }
+      if (!/^[a-z][a-z0-9_-]{5,24}$/.test(name)) { setMsg("用户名：6–25 位，小写字母开头，只能用小写字母/数字/_/-"); return; }
       var btn = this; btn.disabled = true; setMsg("注册中…", true);
       register(code, email, pwd, name).then(function () { setMsg("注册成功！", true); finishAuth(m); })
         .catch(function (e) { btn.disabled = false; setMsg(e.message); });
@@ -290,7 +290,7 @@
       m.querySelector("#setSave").onclick = function () {
         var v = m.querySelector("#setName").value.trim();
         var msg = m.querySelector("#setMsg");
-        if (!/^[A-Za-z][A-Za-z0-9_]{1,30}$/.test(v)) { msg.className = "auth-msg err"; msg.textContent = "用户名需字母开头，仅含字母/数字/下划线"; return; }
+        if (!/^[a-z][a-z0-9_-]{5,24}$/.test(v)) { msg.className = "auth-msg err"; msg.textContent = "用户名：6–25 位，小写字母开头，只能用小写字母/数字/_/-"; return; }
         setName(v); msg.className = "auth-msg ok"; msg.textContent = "已保存";
         setTimeout(function () { m.classList.remove("open"); }, 600);
       };
