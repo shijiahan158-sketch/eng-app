@@ -8,7 +8,7 @@
 <script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="stylesheet" href="assets/style.css" />
 <style>
-.wl-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 0 14px}
+.wl-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 0 12px}
 .wl-back{color:var(--dim);font-size:.9rem}
 .wl-back:hover{color:var(--ink)}
 .wl-title{font-family:var(--serif);font-size:1.18rem;font-weight:700}
@@ -17,26 +17,84 @@
 .mode-toggle a.active{background:var(--brand);color:var(--on-brand)}
 .wl-search{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 16px;color:var(--ink);outline:none;font-size:.9rem;min-width:170px;transition:border-color .16s}
 .wl-search:focus{border-color:var(--ink)}
+
+/* 工具条:视图切换 / 遮释义 / 状态筛选 */
+.wl-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.wt-group{display:flex;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:3px}
+.wt-btn{padding:6px 13px;border:0;background:none;border-radius:7px;font-weight:600;font-size:.84rem;color:var(--dim);cursor:pointer;transition:color .15s,background .15s}
+.wt-btn:hover{color:var(--ink)}
+.wt-btn.on{background:var(--brand);color:var(--on-brand)}
+.wt-mask{padding:8px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--dim);font-weight:600;font-size:.84rem;cursor:pointer;transition:all .15s}
+.wt-mask:hover{border-color:var(--ink);color:var(--ink)}
+.wt-mask.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.wt-filters{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.wt-chip{padding:6px 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--dim);font-weight:600;font-size:.82rem;cursor:pointer;transition:all .15s}
+.wt-chip:hover{color:var(--ink);border-color:var(--ink)}
+.wt-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wt-chip .n{opacity:.65;font-size:.76rem;margin-left:3px}
+
 .wl{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-bottom:50px}
 .wl-side{position:sticky;top:calc(var(--nav-h) + 12px);align-self:start;display:flex;flex-direction:column;gap:2px}
 .wl-side .st{font-size:.78rem;color:var(--dim);font-weight:700;padding:0 10px 8px}
-.wl-side a{padding:9px 12px;border-radius:10px;color:var(--dim);font-size:.92rem;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.wl-side a{padding:9px 12px;border-radius:8px;color:var(--dim);font-size:.92rem;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
 .wl-side a:hover{background:var(--bg);color:var(--ink)}
 .wl-side a.active{background:color-mix(in srgb,var(--brand) 12%,var(--card));color:var(--brand);font-weight:700}
-.wl-side a .c{opacity:.6;font-size:.8rem}
+.wl-side a .c{opacity:.7;font-size:.78rem;font-variant-numeric:tabular-nums}
 .wl-count{color:var(--dim);font-size:.85rem;margin-bottom:12px}
+
+/* 卡片视图 */
 .wcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .wcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;border-left:3px solid transparent}
 .wcard.known{border-left-color:var(--brand)}
 .wcard.unknown{border-left-color:var(--bad)}
-.wcard .top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.wcard .w{font-family:Georgia,"Times New Roman",serif;font-size:1.18rem;font-weight:700}
-.wcard .sp{cursor:pointer;color:var(--brand);background:none;border:0;font-size:.95rem;flex:none}
+.wcard .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wcard .w{font-family:Georgia,"Times New Roman",serif;font-size:1.18rem;font-weight:700;min-width:0;overflow-wrap:break-word}
 .wcard .ph{color:var(--dim);font-size:.8rem;font-style:italic;margin-top:2px}
 .wcard .mn{color:var(--ink);font-size:.9rem;margin-top:8px;opacity:.92}
-.wcard .tag{font-size:.7rem;color:var(--dim);margin-top:8px}
 .wl-empty{padding:50px 20px;text-align:center;color:var(--dim)}
-@media(max-width:820px){.wl{grid-template-columns:1fr}.wl-side{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}.wl-side .st{display:none}.wl-side a{flex:none;border:1px solid var(--line)}}
+
+/* 紧凑列表视图 */
+.wrows{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.wrow{display:flex;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
+.wrow:last-child{border-bottom:0}
+.wrow.known{border-left-color:var(--brand)}
+.wrow.unknown{border-left-color:var(--bad)}
+.wrow .w{font-family:Georgia,"Times New Roman",serif;font-size:1.02rem;font-weight:700;flex:0 0 128px;min-width:0;overflow-wrap:break-word}
+.wrow .ph{color:var(--dim);font-size:.78rem;font-style:italic;flex:0 0 118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wrow .mn{flex:1;font-size:.88rem;min-width:0}
+
+/* 遮释义 */
+.mn.masked{filter:blur(6px);cursor:pointer;user-select:none;transition:filter .15s}
+.mn.masked:active{filter:blur(3px)}
+
+/* 操作按钮:发音 / 认识 / 生词 */
+.ops{display:flex;gap:4px;flex:none;align-items:center}
+.sp{cursor:pointer;color:var(--brand);background:none;border:0;font-size:.95rem;flex:none;padding:2px 4px}
+.mk{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:none;color:var(--dim);cursor:pointer;font-size:.78rem;line-height:1;transition:all .15s}
+.mk:hover{border-color:var(--ink);color:var(--ink)}
+.mk.on-k{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.mk.on-u{background:var(--bad);border-color:var(--bad);color:#fff}
+
+/* 分页 */
+.wl-pager{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px;color:var(--dim);font-size:.9rem}
+.wl-pager button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600;transition:border-color .15s}
+.wl-pager button:hover:not(:disabled){border-color:var(--ink)}
+.wl-pager button:disabled{opacity:.35;cursor:default}
+.wl-pager .pi{font-variant-numeric:tabular-nums}
+
+@media(max-width:820px){
+  .wl{grid-template-columns:1fr}
+  .wl-side{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}
+  .wl-side .st{display:none}
+  .wl-side a{flex:none;border:1px solid var(--line)}
+  .wt-filters{margin-left:0;width:100%}
+}
+@media(max-width:560px){
+  .wrow{flex-wrap:wrap;row-gap:2px}
+  .wrow .w{flex:1 1 auto}
+  .wrow .ph{flex:0 0 auto}
+  .wrow .mn{flex:1 1 100%;order:3}
+}
 </style>
 </head>
 <body>
@@ -65,11 +123,25 @@
     <input class="wl-search" id="search" placeholder="搜单词 / 释义…" />
   </div>
 
+  <div class="wl-tools" id="tools">
+    <div class="wt-group">
+      <button class="wt-btn" data-view="card">卡片</button>
+      <button class="wt-btn" data-view="list">列表</button>
+    </div>
+    <button class="wt-mask" id="maskBtn">遮住释义</button>
+    <div class="wt-filters" id="filters"></div>
+  </div>
+
   <div class="wl" id="wl">
     <aside class="wl-side" id="side"></aside>
     <main class="wl-main">
       <div class="wl-count" id="count"></div>
-      <div class="wcards" id="cards"></div>
+      <div id="cards"></div>
+      <div class="wl-pager" id="pager" style="display:none">
+        <button id="pgPrev">‹ 上一页</button>
+        <span class="pi" id="pgInfo"></span>
+        <button id="pgNext">下一页 ›</button>
+      </div>
     </main>
   </div>
   <div class="wl-empty" id="empty" style="display:none">该考试的词库还没上线,先试试四级 / 六级吧～</div>
@@ -79,13 +151,18 @@
 const NAMES={cet4:'四级',cet6:'六级',ielts:'雅思'};
 const params=new URLSearchParams(location.search);
 const exam=NAMES[params.get('exam')]?params.get('exam'):'cet6';
+const PAGE=Math.max(10,parseInt(params.get('ps'),10)||50);
 const $=id=>document.getElementById(id);
 $('back').href='dashboard.html?exam='+exam;
 $('toStudy').href='study.html?exam='+exam;
 $('title').textContent=NAMES[exam]+' · 词汇';
 
-let DECK=[], cur='全部', kw='', results={};
-try{results=JSON.parse(localStorage.getItem('study-'+exam+'-results')||'{}');}catch(e){}
+const RKEY='study-'+exam+'-results';
+let DECK=[], cur='全部', kw='', results={}, pg=1;
+let view='card', mask=false, filter='all';
+try{results=JSON.parse(localStorage.getItem(RKEY)||'{}');}catch(e){}
+try{view=localStorage.getItem('engapp-wl-view')||'card';}catch(e){}
+if(view!=='card'&&view!=='list')view='card';
 
 const sc=document.createElement('script');
 sc.src='data/'+exam+'.js';
@@ -93,38 +170,103 @@ sc.onload=()=>{ DECK=window.DECK||[]; if(!DECK.length){showEmpty();return;} rend
 sc.onerror=showEmpty;
 document.head.appendChild(sc);
 
-function showEmpty(){ $('wl').style.display='none'; $('empty').style.display='block'; }
+function showEmpty(){ $('wl').style.display='none'; $('tools').style.display='none'; $('empty').style.display='block'; }
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function play(t){const a=new Audio('https://dict.youdao.com/dictvoice?type=2&audio='+encodeURIComponent(t));a.play().catch(()=>{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(t);u.lang='en-US';speechSynthesis.speak(u);}});}
+function saveResults(){ try{localStorage.setItem(RKEY,JSON.stringify(results));}catch(e){} }
 
-function units(){ const m={}; for(const d of DECK){ m[d.u]=(m[d.u]||0)+1; } return m; }
+function units(){ const m={}; for(const d of DECK){ m[d.u]=m[d.u]||{n:0,k:0}; m[d.u].n++; if(results[d.w]==='known')m[d.u].k++; } return m; }
+function stat(arr){ let k=0,u=0,x=0; for(const d of arr){ const s=results[d.w]; if(s==='known')k++; else if(s==='unknown')u++; else x++; } return {k,u,x}; }
+
 function renderSide(){
   const m=units(); const side=$('side');
+  const totalK=Object.values(m).reduce((s,v)=>s+v.k,0);
   let html='<div class="st">单元 / 分组</div>';
-  html+='<a data-u="全部" class="'+(cur==='全部'?'active':'')+'">全部 <span class="c">'+DECK.length+'</span></a>';
-  for(const u of Object.keys(m)) html+='<a data-u="'+esc(u)+'" class="'+(cur===u?'active':'')+'">'+esc(u)+' <span class="c">'+m[u]+'</span></a>';
+  html+='<a data-u="全部" class="'+(cur==='全部'?'active':'')+'">全部 <span class="c">'+totalK+'/'+DECK.length+'</span></a>';
+  for(const u of Object.keys(m)) html+='<a data-u="'+esc(u)+'" class="'+(cur===u?'active':'')+'">'+esc(u)+' <span class="c">'+m[u].k+'/'+m[u].n+'</span></a>';
   side.innerHTML=html;
 }
-function list(){
+function renderFilters(arr){
+  const {k,u,x}=stat(arr);
+  const F=[['all','全部',arr.length],['none','未标记',x],['unknown','生词',u],['known','已认识',k]];
+  $('filters').innerHTML=F.map(f=>'<button class="wt-chip'+(filter===f[0]?' on':'')+'" data-f="'+f[0]+'">'+f[1]+'<span class="n">'+f[2]+'</span></button>').join('');
+}
+function baseList(){
   let arr=DECK.filter(d=>cur==='全部'||d.u===cur);
   if(kw){const k=kw.toLowerCase(); arr=arr.filter(d=>(d.w+' '+d.mn).toLowerCase().includes(k));}
   return arr;
 }
+function list(arr){
+  if(filter==='known')return arr.filter(d=>results[d.w]==='known');
+  if(filter==='unknown')return arr.filter(d=>results[d.w]==='unknown');
+  if(filter==='none')return arr.filter(d=>!results[d.w]);
+  return arr;
+}
+function opsHTML(d){
+  const st=results[d.w];
+  return '<span class="ops">'+
+    '<button class="sp" data-say="'+esc(d.w)+'" title="发音" aria-label="发音">🔊</button>'+
+    '<button class="mk'+(st==='known'?' on-k':'')+'" data-mk="k" data-w="'+esc(d.w)+'" title="认识">✓</button>'+
+    '<button class="mk'+(st==='unknown'?' on-u':'')+'" data-mk="u" data-w="'+esc(d.w)+'" title="生词">✗</button>'+
+  '</span>';
+}
+function phHTML(d){ return d.ph?('/'+esc(String(d.ph).replace(/^\/|\/$/g,""))+'/'+(d.pos?' '+esc(d.pos):'')):(d.pos?esc(d.pos):''); }
+function stCls(d){ const s=results[d.w]; return s==='known'?' known':(s==='unknown'?' unknown':''); }
+function mnCls(){ return 'mn'+(mask?' masked':''); }
+
 function render(){
   renderSide();
-  const arr=list();
-  $('count').textContent='共 '+arr.length+' 词'+(cur!=='全部'?'('+cur+')':'');
-  $('cards').innerHTML=arr.map(d=>{
-    const st=results[d.w]; const cls=st==='known'?' known':(st==='unknown'?' unknown':'');
-    const badge=st==='known'?'<span class="tag" style="color:var(--brand)">✓ 认识</span>':(st==='unknown'?'<span class="tag" style="color:var(--bad)">✗ 生词</span>':'');
-    return '<div class="wcard'+cls+'"><div class="top"><span class="w">'+esc(d.w)+'</span><button class="sp" data-say="'+esc(d.w)+'">🔊</button></div>'+
-      (d.ph?'<div class="ph">/'+esc(String(d.ph).replace(/^\/|\/$/g,""))+'/'+(d.pos?' '+esc(d.pos):'')+'</div>':'')+
-      '<div class="mn">'+esc(d.mn)+'</div>'+badge+'</div>';
-  }).join('');
+  const base=baseList();
+  renderFilters(base);
+  const arr=list(base);
+  const pages=Math.max(1,Math.ceil(arr.length/PAGE));
+  if(pg>pages)pg=pages; if(pg<1)pg=1;
+  const slice=arr.slice((pg-1)*PAGE,pg*PAGE);
+  $('count').textContent='共 '+arr.length+' 词'+(cur!=='全部'?'('+cur+')':'')+(pages>1?(' · 第 '+pg+' / '+pages+' 页'):'');
+  const box=$('cards');
+  if(view==='card'){
+    box.className='wcards';
+    box.innerHTML=slice.map(d=>
+      '<div class="wcard'+stCls(d)+'"><div class="top"><span class="w">'+esc(d.w)+'</span>'+opsHTML(d)+'</div>'+
+      (phHTML(d)?'<div class="ph">'+phHTML(d)+'</div>':'')+
+      '<div class="'+mnCls()+'" data-mn>'+esc(d.mn)+'</div></div>'
+    ).join('');
+  }else{
+    box.className='wrows';
+    box.innerHTML=slice.map(d=>
+      '<div class="wrow'+stCls(d)+'"><span class="w">'+esc(d.w)+'</span><span class="ph">'+phHTML(d)+'</span>'+
+      '<span class="'+mnCls()+'" data-mn>'+esc(d.mn)+'</span>'+opsHTML(d)+'</div>'
+    ).join('');
+  }
+  if(!slice.length) box.innerHTML='<div class="wl-empty">没有符合条件的单词</div>';
+  $('pager').style.display=pages>1?'flex':'none';
+  $('pgInfo').textContent='第 '+pg+' / '+pages+' 页';
+  $('pgPrev').disabled=pg<=1; $('pgNext').disabled=pg>=pages;
+  document.querySelectorAll('.wt-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+  const mb=$('maskBtn'); mb.classList.toggle('on',mask); mb.textContent=mask?'显示释义':'遮住释义';
 }
-$('side').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;cur=a.dataset.u;render();});
-$('cards').addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b)play(b.getAttribute('data-say'));});
-$('search').addEventListener('input',()=>{kw=$('search').value.trim();render();});
+
+$('side').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;cur=a.dataset.u;pg=1;render();});
+$('filters').addEventListener('click',e=>{const b=e.target.closest('.wt-chip');if(!b)return;filter=b.dataset.f;pg=1;render();});
+$('tools').addEventListener('click',e=>{
+  const v=e.target.closest('.wt-btn');
+  if(v){view=v.dataset.view;try{localStorage.setItem('engapp-wl-view',view);}catch(err){}render();return;}
+  if(e.target.closest('#maskBtn')){mask=!mask;render();}
+});
+$('cards').addEventListener('click',e=>{
+  const sp=e.target.closest('[data-say]'); if(sp){play(sp.getAttribute('data-say'));return;}
+  const mk=e.target.closest('[data-mk]');
+  if(mk){
+    const w=mk.getAttribute('data-w'), want=mk.getAttribute('data-mk')==='k'?'known':'unknown';
+    if(results[w]===want)delete results[w]; else results[w]=want;
+    saveResults(); render(); return;
+  }
+  const mn=e.target.closest('[data-mn]');
+  if(mn&&mn.classList.contains('masked'))mn.classList.remove('masked');
+});
+$('search').addEventListener('input',()=>{kw=$('search').value.trim();pg=1;render();});
+$('pgPrev').addEventListener('click',()=>{if(pg>1){pg--;render();window.scrollTo({top:0});}});
+$('pgNext').addEventListener('click',()=>{pg++;render();window.scrollTo({top:0});});
 </script>
 <script src="assets/app.js"></script>
 </body>
