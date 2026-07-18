@@ -1,6 +1,24 @@
-// 雅思主题词库 · 10 主题 × 40 词 = 400 词
-// 字段:w 单词 / ph 音标(不含斜杠) / pos 词性(并入 mn) / mn 释义 / u 主题分组
+// 雅思词库 · 按 22 章重构中(词条由用户提供,分批录入)
+// 章节顺序:自然地理→植物研究→动物保护→太空探索→学校教育→科技发明→文化历史→语言演化→娱乐运动→物品材料→时尚潮流→饮食健康→建筑场所→交通旅行→国家政府→社会经济→法律法规→沙场争锋→社会角色→行为动作→身心健康→时间日期
+// 旧 10 主题词条暂留文件末尾,22 章齐后整体退役
+// 字段:w 单词 / ph 音标(不含斜杠) / pos 词性(并入 mn) / mn 释义 / u 章节分组
 window.DECK=[
+// ===== Chapter 1 自然地理 =====
+{"w":"atmosphere","ph":"ˈætməsfɪə","pos":"","mn":"n. 大气层,大气圈;气氛","u":"自然地理","ex":"The Earth's atmosphere protects us from harmful radiation.","exz":"地球的大气层保护我们免受有害辐射。"},
+{"w":"hydrosphere","ph":"ˈhaɪdrəʊsfɪə","pos":"","mn":"n. 水圈;大气中的水汽","u":"自然地理","ex":"The hydrosphere includes all the oceans, lakes and rivers.","exz":"水圈包括所有的海洋、湖泊和河流。"},
+{"w":"lithosphere","ph":"ˈlɪθəʊsfɪə","pos":"","mn":"n. 岩石圈","u":"自然地理","ex":"Earthquakes usually begin deep within the lithosphere.","exz":"地震通常发源于岩石圈深处。"},
+{"w":"oxygen","ph":"ˈɒksɪdʒən","pos":"","mn":"n. 氧气","u":"自然地理","ex":"Fish absorb oxygen from water through their gills.","exz":"鱼通过鳃从水中吸收氧气。"},
+{"w":"oxide","ph":"ˈɒksaɪd","pos":"","mn":"n. 氧化物","u":"自然地理","ex":"Rust is an oxide that forms when iron meets water and air.","exz":"铁锈是铁遇到水和空气后形成的一种氧化物。"},
+{"w":"carbon dioxide","ph":"ˌkɑːbən daɪˈɒksaɪd","pos":"","mn":"n. 二氧化碳","u":"自然地理","ex":"Plants absorb carbon dioxide during photosynthesis.","exz":"植物在光合作用中吸收二氧化碳。"},
+{"w":"hydrogen","ph":"ˈhaɪdrədʒən","pos":"","mn":"n. 氢气","u":"自然地理","ex":"Hydrogen is the lightest element in the universe.","exz":"氢是宇宙中最轻的元素。"},
+{"w":"core","ph":"kɔː","pos":"","mn":"n. 中心,核心;地核","u":"自然地理","ex":"The Earth's core is mainly made of iron and nickel.","exz":"地核主要由铁和镍构成。"},
+{"w":"crust","ph":"krʌst","pos":"","mn":"n. 地壳;外壳","u":"自然地理","ex":"The Earth's crust is thinnest under the oceans.","exz":"地壳在海洋下方最薄。"},
+{"w":"mantle","ph":"ˈmæntl","pos":"","mn":"n. 地幔;斗篷,披风 v. 覆盖","u":"自然地理","ex":"Hot rock moves slowly within the Earth's mantle.","exz":"炽热的岩石在地幔中缓慢流动。"},
+{"w":"longitude","ph":"ˈlɒndʒɪtjuːd","pos":"","mn":"n. 经度","u":"自然地理","ex":"Greenwich is the starting point for measuring longitude.","exz":"格林尼治是测量经度的起点。"},
+{"w":"latitude","ph":"ˈlætɪtjuːd","pos":"","mn":"n. 纬度","u":"自然地理","ex":"Countries at high latitudes have long, cold winters.","exz":"高纬度国家的冬天漫长而寒冷。"},
+{"w":"horizon","ph":"həˈraɪzn","pos":"","mn":"n. 地平线;(horizons)眼界,见识","u":"自然地理","ex":"The sun slowly sank below the horizon.","exz":"太阳缓缓沉入地平线之下。"},
+{"w":"altitude","ph":"ˈæltɪtjuːd","pos":"","mn":"n. 高度,海拔","u":"自然地理","ex":"Breathing becomes harder at high altitude.","exz":"在高海拔地区,呼吸会变得困难。"},
+{"w":"disaster","ph":"dɪˈzɑːstə","pos":"","mn":"n. 灾难","u":"自然地理","ex":"The earthquake was the worst natural disaster in decades.","exz":"这次地震是几十年来最严重的自然灾害。"},
 {"w":"curriculum","ph":"kəˈrɪkjʊləm","pos":"","mn":"n. 课程,全部课程","u":"教育"},
 {"w":"syllabus","ph":"ˈsɪləbəs","pos":"","mn":"n. 教学大纲,课程提纲","u":"教育"},
 {"w":"tuition","ph":"tjuˈɪʃn","pos":"","mn":"n. 学费;讲授,教学","u":"教育"},

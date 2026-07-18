@@ -24,6 +24,7 @@
 .wt-btn{padding:6px 13px;border:0;background:none;border-radius:7px;font-weight:600;font-size:.84rem;color:var(--dim);cursor:pointer;transition:color .15s,background .15s}
 .wt-btn:hover{color:var(--ink)}
 .wt-btn.on{background:var(--brand);color:var(--on-brand)}
+.wt-lab{align-self:center;color:var(--dim);font-size:.8rem;font-weight:600;padding:0 4px 0 8px}
 .wt-mask{padding:8px 14px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--dim);font-weight:600;font-size:.84rem;cursor:pointer;transition:all .15s}
 .wt-mask:hover{border-color:var(--ink);color:var(--ink)}
 .wt-mask.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
@@ -129,6 +130,12 @@
       <button class="wt-btn" data-view="list">列表</button>
     </div>
     <button class="wt-mask" id="maskBtn">遮住释义</button>
+    <div class="wt-group" title="每页显示的单词数">
+      <span class="wt-lab">每页</span>
+      <button class="wt-btn" data-ps="20">20</button>
+      <button class="wt-btn" data-ps="50">50</button>
+      <button class="wt-btn" data-ps="100">100</button>
+    </div>
     <div class="wt-filters" id="filters"></div>
   </div>
 
@@ -151,7 +158,11 @@
 const NAMES={cet4:'四级',cet6:'六级',ielts:'雅思'};
 const params=new URLSearchParams(location.search);
 const exam=NAMES[params.get('exam')]?params.get('exam'):'cet6';
-const PAGE=Math.max(10,parseInt(params.get('ps'),10)||50);
+const PS_OPTS=[20,50,100];
+let pageSize=50;
+try{const s=parseInt(localStorage.getItem('engapp-wl-ps'),10);if(PS_OPTS.includes(s))pageSize=s;}catch(e){}
+const psParam=parseInt(params.get('ps'),10);
+if(psParam>=10)pageSize=psParam;
 const $=id=>document.getElementById(id);
 $('back').href='dashboard.html?exam='+exam;
 $('toStudy').href='study.html?exam='+exam;
@@ -219,9 +230,9 @@ function render(){
   const base=baseList();
   renderFilters(base);
   const arr=list(base);
-  const pages=Math.max(1,Math.ceil(arr.length/PAGE));
+  const pages=Math.max(1,Math.ceil(arr.length/pageSize));
   if(pg>pages)pg=pages; if(pg<1)pg=1;
-  const slice=arr.slice((pg-1)*PAGE,pg*PAGE);
+  const slice=arr.slice((pg-1)*pageSize,pg*pageSize);
   $('count').textContent='共 '+arr.length+' 词'+(cur!=='全部'?'('+cur+')':'')+(pages>1?(' · 第 '+pg+' / '+pages+' 页'):'');
   const box=$('cards');
   if(view==='card'){
@@ -242,15 +253,18 @@ function render(){
   $('pager').style.display=pages>1?'flex':'none';
   $('pgInfo').textContent='第 '+pg+' / '+pages+' 页';
   $('pgPrev').disabled=pg<=1; $('pgNext').disabled=pg>=pages;
-  document.querySelectorAll('.wt-btn').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+  document.querySelectorAll('.wt-btn[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+  document.querySelectorAll('.wt-btn[data-ps]').forEach(b=>b.classList.toggle('on',parseInt(b.dataset.ps,10)===pageSize));
   const mb=$('maskBtn'); mb.classList.toggle('on',mask); mb.textContent=mask?'显示释义':'遮住释义';
 }
 
 $('side').addEventListener('click',e=>{const a=e.target.closest('a');if(!a)return;cur=a.dataset.u;pg=1;render();});
 $('filters').addEventListener('click',e=>{const b=e.target.closest('.wt-chip');if(!b)return;filter=b.dataset.f;pg=1;render();});
 $('tools').addEventListener('click',e=>{
-  const v=e.target.closest('.wt-btn');
+  const v=e.target.closest('.wt-btn[data-view]');
   if(v){view=v.dataset.view;try{localStorage.setItem('engapp-wl-view',view);}catch(err){}render();return;}
+  const p=e.target.closest('.wt-btn[data-ps]');
+  if(p){pageSize=parseInt(p.dataset.ps,10);try{localStorage.setItem('engapp-wl-ps',pageSize);}catch(err){}pg=1;render();window.scrollTo({top:0});return;}
   if(e.target.closest('#maskBtn')){mask=!mask;render();}
 });
 $('cards').addEventListener('click',e=>{

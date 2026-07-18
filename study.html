@@ -21,6 +21,12 @@ a{text-decoration:none;color:inherit}
 .prog .nums{display:flex;justify-content:space-between;color:var(--dim);font-size:.82rem;margin-bottom:8px}
 .pbar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .pbar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .25s}
+.opts{max-width:680px;margin:10px auto 0;width:100%;padding:0 24px;display:none;gap:8px;flex-wrap:wrap;justify-content:space-between}
+.opts.show{display:flex}
+.og{display:flex;background:#fffdf7;border:1px solid var(--line);border-radius:9px;padding:3px;gap:2px}
+.ob{border:0;background:none;border-radius:7px;padding:6px 12px;font-size:.82rem;font-weight:600;color:var(--dim);cursor:pointer;transition:color .15s,background .15s}
+.ob:hover{color:var(--ink)}
+.ob.on{background:var(--accent);color:#fffdf7}
 .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 24px 10px}
 .tag{letter-spacing:.22em;font-size:.72rem;color:var(--accent);font-weight:700;text-transform:uppercase}
 .word{font-family:Georgia,"Times New Roman","Noto Serif SC",serif;font-size:clamp(2.6rem,10vw,4rem);font-weight:600;margin-top:18px;letter-spacing:-.01em;word-break:break-word}
@@ -28,6 +34,11 @@ a{text-decoration:none;color:inherit}
 .mn{margin-top:20px;font-size:1.25rem;max-width:26ch;cursor:pointer;filter:blur(8px);user-select:none}
 .mn.show{filter:none;cursor:default}
 .mn .hint{font-size:.85rem;color:var(--dim)}
+.ex{margin-top:16px;max-width:48ch;font-size:.98rem;line-height:1.7;display:none;text-align:center}
+.ex.show{display:block}
+.ex .en{color:var(--ink);font-family:Georgia,"Times New Roman",serif}
+.ex .en b{color:var(--accent);font-weight:700}
+.ex .zh{color:var(--dim);font-size:.86rem;margin-top:4px}
 .marked{margin-top:14px;font-size:.85rem;font-weight:700;min-height:1.3em}
 .marked.k{color:var(--ok)}.marked.n{color:var(--no)}
 .row{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:24px;flex-wrap:wrap}
@@ -48,10 +59,12 @@ a{text-decoration:none;color:inherit}
 .done .big{font-size:3rem}.done h2{font-size:1.6rem;font-weight:600;margin-top:10px}
 .done p{color:var(--dim);margin-top:8px;font-size:1.05rem}
 .done .again{margin-top:24px;background:var(--ink);color:var(--bg);border:0;padding:13px 26px;border-radius:999px;cursor:pointer;font-weight:600}
+.done .again.sub{margin-top:12px;background:transparent;color:var(--ink);border:1px solid var(--line)}
 .done .back2{margin-top:14px;color:var(--dim);font-size:.9rem}
 .empty{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--dim)}
 .empty.show{display:flex}
 .empty .big{font-size:2.6rem;margin-bottom:10px}
+.empty .again{margin-top:18px;background:var(--ink);color:var(--bg);border:0;padding:13px 26px;border-radius:999px;cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
@@ -61,15 +74,31 @@ a{text-decoration:none;color:inherit}
   <span class="where" id="where">加载中…</span>
 </div>
 <div class="prog" id="prog" style="display:none">
-  <div class="nums"><span id="pos">0 / 0</span><span><span id="kn" style="color:#2f8f5b">认识 0</span> · <span id="unk" style="color:#c2603f">生词 0</span></span></div>
+  <div class="nums"><span id="pos">0 / 0</span><span><span id="kn" style="color:var(--ok)">认识 0</span> · <span id="unk" style="color:var(--no)">生词 0</span></span></div>
   <div class="pbar"><span id="pfill" style="width:0%"></span></div>
+</div>
+<div class="opts" id="opts">
+  <div class="og" id="ogMode">
+    <button class="ob on" data-mode="learn">学习</button>
+    <button class="ob" data-mode="quiz">自测</button>
+  </div>
+  <div class="og" id="ogRange">
+    <button class="ob on" data-range="all">全部</button>
+    <button class="ob" data-range="unknown">只背生词</button>
+    <button class="ob" data-range="new">未标记</button>
+  </div>
+  <div class="og">
+    <button class="ob" id="shufBtn">乱序</button>
+    <button class="ob" id="autoBtn">自动发音</button>
+  </div>
 </div>
 
 <main class="stage" id="stage" style="display:none">
   <div class="tag" id="tag">WORD 1</div>
   <div class="word" id="word">—</div>
   <div class="ph" id="ph"></div>
-  <div class="mn" id="mn"><span class="real" style="display:none"></span><span class="hint">点击显示释义</span></div>
+  <div class="mn" id="mn"></div>
+  <div class="ex" id="ex"></div>
   <div class="marked" id="mark"></div>
   <div class="row">
     <button class="btn play" id="playBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> 发音</button>
@@ -85,8 +114,15 @@ a{text-decoration:none;color:inherit}
   <div class="big" style="color:var(--ok)"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
   <h2 id="doneTitle">这组过完啦</h2>
   <p id="doneStat">认识 0 · 生词 0</p>
-  <button class="again" id="againBtn">再背一遍</button>
+  <button class="again" id="loopBtn" style="display:none"></button>
+  <button class="again sub" id="againBtn">再背一遍</button>
   <a class="back2" id="back2" href="dashboard.html">返回备考中心</a>
+</div>
+
+<div class="empty" id="rangeEmpty">
+  <div class="big" style="color:var(--dim)"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+  <div id="rangeMsg">该范围内没有单词</div>
+  <button class="again" id="backAll">背全部</button>
 </div>
 
 <div class="empty" id="empty">
@@ -95,7 +131,7 @@ a{text-decoration:none;color:inherit}
   <a class="back2" style="margin-top:18px;color:var(--accent)" href="index.html">← 回首页选考试</a>
 </div>
 
-<div class="tip" id="tip" style="display:none">键盘:<span class="kbd">←</span> <span class="kbd">→</span> 翻词 · <span class="kbd">空格</span> 显示释义 · <span class="kbd">↑</span> 认识 · <span class="kbd">↓</span> 不认识(标记后均显示释义,按 → 切词)</div>
+<div class="tip" id="tip" style="display:none"></div>
 
 <script>
 const NAMES={cet4:'四级',cet6:'六级',ielts:'雅思'};
@@ -105,10 +141,23 @@ document.getElementById('back').href='dashboard.html?exam='+exam;
 document.getElementById('back2').href='dashboard.html?exam='+exam;
 document.getElementById('toList').href='words.html?exam='+exam;
 
-let DECK=[], idx=0, results={};
+let DECK=[], SD=[], idx=0, results={};
+let range='all', shuffled=false, autoplay=false;
+let mode = params.get('mode')==='quiz' ? 'quiz' : 'learn';   // 默认永远是学习模式,不持久化
+let stage=2;            // 0 全遮 / 1 例句已显 / 2 全显;learn 恒为 2
+let judged=false;       // 当前卡本轮是否已作答(quiz)
+let customDeck=null;    // 复测用临时词表
+let roundUnknown=[], roundRight=[], roundWrong=[];
+let glanceTimer=null;   // 「确认一瞥」定时器
+
 const KEY='study-'+exam+'-results';
 try{results=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){results={};}
+try{autoplay=localStorage.getItem('engapp-autoplay')==='1';}catch(e){}
 const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function hi(t,w){ try{ const r=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+')+'[a-z]*)','ig'); return t.replace(r,'<b>$1</b>'); }catch(e){ return t; } }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function clearGlance(){ if(glanceTimer){clearTimeout(glanceTimer);glanceTimer=null;} }
 
 const sc=document.createElement('script');
 sc.src='data/'+exam+'.js';
@@ -119,46 +168,178 @@ document.head.appendChild(sc);
 function showEmpty(){ $('where').textContent=NAMES[exam]; $('emptyMsg').textContent=NAMES[exam]+' 的词库还没上线,先试试四级 / 六级吧～'; $('empty').classList.add('show'); }
 function save(){ try{localStorage.setItem(KEY,JSON.stringify(results));}catch(e){} }
 function play(t){ const a=new Audio('https://dict.youdao.com/dictvoice?type=2&audio='+encodeURIComponent(t)); a.play().catch(()=>{if(window.speechSynthesis){const u=new SpeechSynthesisUtterance(t);u.lang='en-US';speechSynthesis.speak(u);}}); }
-function reveal(){ const m=$('mn'); m.classList.add('show'); const r=m.querySelector('.real'); if(r)r.style.display=''; const h=m.querySelector('.hint'); if(h)h.remove(); }
 function counts(){ let k=0,u=0; for(const d of DECK){ if(results[d.w]==='known')k++; else if(results[d.w]==='unknown')u++; } return {k,u}; }
 
-function startSession(){ $('prog').style.display=''; $('stage').style.display='flex'; $('tip').style.display=''; $('where').textContent=NAMES[exam]+' · 共 '+DECK.length+' 词'; idx=0; render(); }
+/* ===== 揭示阶段 ===== */
+function setStage(n){
+  const c=SD[idx], m=$('mn'), ex=$('ex');
+  stage=n;
+  if(mode==='learn'||n>=2){
+    stage=2;
+    m.classList.add('show');
+    m.innerHTML='<span class="real">'+esc(c.mn)+'</span>';
+    if(c.ex){ ex.innerHTML='<p class="en">'+hi(esc(c.ex),c.w)+'</p>'+(c.exz?'<p class="zh">'+esc(c.exz)+'</p>':''); ex.classList.add('show'); }
+    else { ex.innerHTML=''; ex.classList.remove('show'); }
+    return;
+  }
+  m.classList.remove('show');
+  const hint = n===0 ? (c.ex?'空格 · 先看例句提示':'空格 · 显示释义') : '再按一次显示释义';
+  m.innerHTML='<span class="real">'+esc(c.mn)+'</span><span class="hint" style="display:block">'+hint+'</span>';
+  if(n===1){ ex.innerHTML='<p class="en">'+hi(esc(c.ex),c.w)+'</p>'; ex.classList.add('show'); }
+  else { ex.innerHTML=''; ex.classList.remove('show'); }
+}
+function advanceStage(){
+  if(mode!=='quiz')return;
+  if(stage===0)setStage(SD[idx].ex?1:2);
+  else if(stage===1)setStage(2);
+  else go(idx+1);
+}
+
+/* ===== 会话 ===== */
+function buildSession(){
+  if(customDeck){ SD=customDeck.slice(); idx=0; $('where').textContent=NAMES[exam]+' · 复测 '+SD.length+' 词'; return; }
+  let arr=DECK;
+  if(range==='unknown')arr=DECK.filter(d=>results[d.w]==='unknown');
+  else if(range==='new')arr=DECK.filter(d=>!results[d.w]);
+  SD=arr.slice();
+  if(shuffled)shuffle(SD);
+  idx=0;
+  $('where').textContent=NAMES[exam]+(range==='all'?(' · 共 '+DECK.length+' 词'):(' · 本轮 '+SD.length+' 词'));
+}
+function syncOpts(){
+  document.querySelectorAll('#ogMode .ob').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+  document.querySelectorAll('#ogRange .ob').forEach(b=>b.classList.toggle('on',b.dataset.range===range));
+  $('shufBtn').classList.toggle('on',shuffled);
+  $('autoBtn').classList.toggle('on',autoplay);
+}
+function syncTip(){
+  $('tip').innerHTML = mode==='learn'
+    ? '键盘:<span class="kbd">←</span> <span class="kbd">→</span> 翻词 · <span class="kbd">空格</span> 下一词 · <span class="kbd">↑</span> 认识 <span class="kbd">↓</span> 不认识(标记后自动切词)'
+    : '键盘:<span class="kbd">空格</span> 逐级揭示 / 下一词 · <span class="kbd">↑</span> 认识(闪示后切词) · <span class="kbd">↓</span> 不认识(揭示并停留) · <span class="kbd">←</span> <span class="kbd">→</span> 翻词';
+}
+function applySession(){
+  clearGlance();
+  roundUnknown=[]; roundRight=[]; roundWrong=[];
+  buildSession(); syncOpts(); syncTip();
+  $('done').classList.remove('show');
+  if(!SD.length){
+    $('stage').style.display='none'; $('prog').style.display='none'; $('tip').style.display='none';
+    const hasUnknown=DECK.some(d=>results[d.w]==='unknown');
+    let msg,btn,act;
+    if(range==='unknown'){ msg='还没有标记过的生词——先用学习模式过一遍,把生词标出来'; btn='去学习未标记'; act=()=>{range='new';mode='learn';customDeck=null;applySession();}; }
+    else if(range==='new'&&hasUnknown){ msg='都学过了,去自测生词吧'; btn='自测生词'; act=()=>{range='unknown';mode='quiz';customDeck=null;applySession();}; }
+    else { msg='这个范围内没有单词了'; btn='背全部'; act=()=>{range='all';mode='learn';customDeck=null;applySession();}; }
+    $('rangeMsg').textContent=msg; const ba=$('backAll'); ba.textContent=btn; ba.onclick=act;
+    $('rangeEmpty').classList.add('show');
+    return;
+  }
+  $('rangeEmpty').classList.remove('show');
+  $('prog').style.display=''; $('stage').style.display='flex'; $('tip').style.display='';
+  render();
+}
+function startSession(){ $('opts').classList.add('show'); applySession(); }
+
+/* ===== 渲染 ===== */
+function renderMark(){
+  const st=results[SD[idx].w], mk=$('mark');
+  if(st==='unknown'){mk.className='marked n';mk.textContent='✗ 已记录:生词';}
+  else if(st==='known'){mk.className='marked k';mk.textContent='✓ 已记录:认识';}
+  else{mk.className='marked';mk.textContent='';}
+}
 function render(){
-  const c=DECK[idx];
+  clearGlance(); judged=false;
+  const c=SD[idx];
   $('tag').textContent='WORD '+(idx+1);
   $('word').textContent=c.w;
   $('ph').textContent=(c.ph?('/'+String(c.ph).replace(/^\/|\/$/g,'')+'/'):'')+(c.pos?('　'+c.pos):'');
-  const m=$('mn'); m.classList.remove('show');
-  m.innerHTML='<span class="real" style="display:none">'+c.mn+'</span><span class="hint">点击显示释义</span>';
-  const st=results[c.w], mk=$('mark');
-  if(st==='unknown'){mk.className='marked n';mk.textContent='✗ 已记录:生词';reveal();}
-  else if(st==='known'){mk.className='marked k';mk.textContent='✓ 已记录:认识';reveal();}
-  else{mk.className='marked';mk.textContent='';}
+  setStage(mode==='learn'?2:0);
+  renderMark();
   const {k,u}=counts();
-  $('pos').textContent=(idx+1)+' / '+DECK.length;
-  $('pfill').style.width=((idx+1)/DECK.length*100)+'%';
+  $('pos').textContent=(idx+1)+' / '+SD.length;
+  $('pfill').style.width=((idx+1)/SD.length*100)+'%';
   $('kn').textContent='认识 '+k; $('unk').textContent='生词 '+u;
   $('prevBtn').disabled=idx===0;
+  if(autoplay)play(c.w);
 }
-function go(n){ if(n<0){idx=Math.max(0,idx-1);render();return;} if(n>=DECK.length){finish();return;} idx=n; render(); }
-function markKnown(){ results[DECK[idx].w]='known'; save(); reveal(); render(); }
-function markUnknown(){ results[DECK[idx].w]='unknown'; save(); reveal(); render(); }
-function finish(){ $('stage').style.display='none'; $('prog').style.display='none'; $('tip').style.display='none'; const {k,u}=counts(); $('doneStat').textContent='认识 '+k+' · 生词 '+u+'(共 '+DECK.length+' 词)'; $('done').classList.add('show'); }
+function go(n){ clearGlance(); if(n<0){idx=Math.max(0,idx-1);render();return;} if(n>=SD.length){finish();return;} idx=n; render(); }
 
-$('playBtn').addEventListener('click',()=>play(DECK[idx].w));
-$('mn').addEventListener('click',reveal);
-$('okBtn').addEventListener('click',markKnown);
-$('noBtn').addEventListener('click',markUnknown);
+/* ===== 标记(两模式双关语义) ===== */
+function moveScore(c,kind){
+  roundRight=roundRight.filter(x=>x.w!==c.w);
+  roundWrong=roundWrong.filter(x=>x.w!==c.w);
+  (kind==='known'?roundRight:roundWrong).push(c);
+}
+function mark(kind){
+  const c=SD[idx]; clearGlance();
+  results[c.w]=kind; save();
+  if(mode==='learn'){
+    if(kind==='unknown'){ if(!roundUnknown.some(x=>x.w===c.w))roundUnknown.push(c); }
+    else roundUnknown=roundUnknown.filter(x=>x.w!==c.w);
+    renderMark();
+    go(idx+1);                                   // 学习态:标记即前进
+    return;
+  }
+  const wasJudged=judged;
+  moveScore(c,kind); judged=true;
+  if(kind==='known'){
+    if(!wasJudged&&stage<2){                      // 未看答案就认识 → 闪示答案 800ms 确认一瞥
+      setStage(2); renderMark();
+      glanceTimer=setTimeout(()=>{glanceTimer=null;go(idx+1);},800);
+    }else if(!wasJudged){ renderMark(); go(idx+1); }   // 答案已可见 → 直接下一词
+    else renderMark();                                  // 改判 → 停留
+  }else{
+    setStage(2); renderMark();                          // 不认识 → 完整揭示并停留
+  }
+}
+
+/* ===== 结算 ===== */
+function finish(){
+  clearGlance();
+  $('stage').style.display='none'; $('prog').style.display='none'; $('tip').style.display='none';
+  const {k,u}=counts(); const lb=$('loopBtn');
+  if(mode==='quiz'){
+    $('doneTitle').textContent='自测结束';
+    $('doneStat').textContent='本轮答对 '+roundRight.length+' · 答错 '+roundWrong.length+'(全库:认识 '+k+' · 生词 '+u+')';
+    lb.style.display='';
+    if(roundWrong.length){ lb.textContent='重测答错的 '+roundWrong.length+' 个'; const wrong=roundWrong.slice(); lb.onclick=()=>{ customDeck=shuffle(wrong.slice()); mode='quiz'; applySession(); }; }
+    else { lb.textContent='再测一遍'; lb.onclick=()=>applySession(); }
+  }else{
+    $('doneTitle').textContent='这组过完啦';
+    $('doneStat').textContent='认识 '+k+' · 生词 '+u+'(共 '+DECK.length+' 词)';
+    if(roundUnknown.length){ lb.style.display=''; lb.textContent='马上自测本轮生词('+roundUnknown.length+' 个)'; const uw=roundUnknown.slice(); lb.onclick=()=>{ customDeck=shuffle(uw.slice()); mode='quiz'; applySession(); }; }
+    else lb.style.display='none';
+  }
+  $('done').classList.add('show');
+}
+
+/* ===== 事件 ===== */
+$('playBtn').addEventListener('click',()=>play(SD[idx].w));
+$('mn').addEventListener('click',()=>{ if(mode==='quiz')advanceStage(); });
+$('okBtn').addEventListener('click',()=>mark('known'));
+$('noBtn').addEventListener('click',()=>mark('unknown'));
 $('prevBtn').addEventListener('click',()=>go(idx-1));
 $('nextBtn').addEventListener('click',()=>go(idx+1));
-$('againBtn').addEventListener('click',()=>{ idx=0; $('done').classList.remove('show'); $('stage').style.display='flex'; $('prog').style.display=''; $('tip').style.display=''; render(); });
+$('againBtn').addEventListener('click',()=>{ customDeck=null; applySession(); });
+$('ogMode').addEventListener('click',e=>{
+  const b=e.target.closest('.ob'); if(!b||b.dataset.mode===mode)return;
+  clearGlance(); mode=b.dataset.mode; syncOpts(); syncTip();
+  if($('stage').style.display!=='none'){ judged=false; setStage(mode==='learn'?2:0); renderMark(); }
+});
+$('ogRange').addEventListener('click',e=>{
+  const b=e.target.closest('.ob'); if(!b)return;
+  range=b.dataset.range; customDeck=null;
+  if(range==='unknown')mode='quiz'; else if(range==='new')mode='learn';   // 范围联动(可再手动覆盖)
+  applySession();
+});
+$('shufBtn').addEventListener('click',()=>{ shuffled=!shuffled; customDeck=null; applySession(); });
+$('autoBtn').addEventListener('click',()=>{ autoplay=!autoplay; try{localStorage.setItem('engapp-autoplay',autoplay?'1':'0');}catch(e){} syncOpts(); if(autoplay&&SD.length)play(SD[idx].w); });
 document.addEventListener('keydown',e=>{
   if($('stage').style.display==='none')return;
   if(e.key==='ArrowLeft')go(idx-1);
   else if(e.key==='ArrowRight')go(idx+1);
-  else if(e.key===' '){e.preventDefault();reveal();}
-  else if(e.key==='ArrowUp'){e.preventDefault();markKnown();}
-  else if(e.key==='ArrowDown'){e.preventDefault();markUnknown();}
+  else if(e.key===' '){e.preventDefault(); if(mode==='quiz')advanceStage(); else go(idx+1);}
+  else if(e.key==='ArrowUp'){e.preventDefault();mark('known');}
+  else if(e.key==='ArrowDown'){e.preventDefault();mark('unknown');}
 });
 </script>
 </body>
