@@ -39,6 +39,8 @@ a{text-decoration:none;color:inherit}
 .ex .en{color:var(--ink);font-family:Georgia,"Times New Roman",serif}
 .ex .en b{color:var(--accent);font-weight:700}
 .ex .zh{color:var(--dim);font-size:.86rem;margin-top:4px}
+.ex-sp{border:0;background:none;color:var(--accent);cursor:pointer;padding:0 2px;margin-left:4px;vertical-align:-2px;line-height:1}
+.ex-sp:hover{opacity:.65}
 .marked{margin-top:14px;font-size:.85rem;font-weight:700;min-height:1.3em}
 .marked.k{color:var(--ok)}.marked.n{color:var(--no)}
 .row{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:24px;flex-wrap:wrap}
@@ -158,6 +160,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 function hi(t,w){ try{ const r=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+')+'[a-z]*)','ig'); return t.replace(r,'<b>$1</b>'); }catch(e){ return t; } }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function clearGlance(){ if(glanceTimer){clearTimeout(glanceTimer);glanceTimer=null;} }
+function exEn(c){ return '<p class="en">'+hi(esc(c.ex),c.w)+'<button class="ex-sp" title="朗读例句" aria-label="朗读例句"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></button></p>'; }
 
 const sc=document.createElement('script');
 sc.src='data/'+exam+'.js';
@@ -178,14 +181,14 @@ function setStage(n){
     stage=2;
     m.classList.add('show');
     m.innerHTML='<span class="real">'+esc(c.mn)+'</span>';
-    if(c.ex){ ex.innerHTML='<p class="en">'+hi(esc(c.ex),c.w)+'</p>'+(c.exz?'<p class="zh">'+esc(c.exz)+'</p>':''); ex.classList.add('show'); }
+    if(c.ex){ ex.innerHTML=exEn(c)+(c.exz?'<p class="zh">'+esc(c.exz)+'</p>':''); ex.classList.add('show'); }
     else { ex.innerHTML=''; ex.classList.remove('show'); }
     return;
   }
   m.classList.remove('show');
   const hint = n===0 ? (c.ex?'空格 · 先看例句提示':'空格 · 显示释义') : '再按一次显示释义';
   m.innerHTML='<span class="real">'+esc(c.mn)+'</span><span class="hint" style="display:block">'+hint+'</span>';
-  if(n===1){ ex.innerHTML='<p class="en">'+hi(esc(c.ex),c.w)+'</p>'; ex.classList.add('show'); }
+  if(n===1){ ex.innerHTML=exEn(c); ex.classList.add('show'); }
   else { ex.innerHTML=''; ex.classList.remove('show'); }
 }
 function advanceStage(){
@@ -315,6 +318,7 @@ function finish(){
 /* ===== 事件 ===== */
 $('playBtn').addEventListener('click',()=>play(SD[idx].w));
 $('mn').addEventListener('click',()=>{ if(mode==='quiz')advanceStage(); });
+$('ex').addEventListener('click',e=>{ const b=e.target.closest('.ex-sp'); if(b){ e.stopPropagation(); play(SD[idx].ex); } });
 $('okBtn').addEventListener('click',()=>mark('known'));
 $('noBtn').addEventListener('click',()=>mark('unknown'));
 $('prevBtn').addEventListener('click',()=>go(idx-1));
