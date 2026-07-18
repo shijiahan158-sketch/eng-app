@@ -5,26 +5,27 @@ if (navToggle) navToggle.addEventListener("click", () => navLinks.classList.togg
 
 // ===== 主题切换（两页共用，localStorage 跨页记忆） =====
 const THEMES = [
-  { id:"indigo",  name:"默认",   dots:["#4f46e5","#8b5cf6","#ec4899"] },
-  { id:"pebl",    name:"自然",   dots:["#1f6f4f","#0d6568","#c18d7d"] },
-  { id:"ocean",   name:"海洋",   dots:["#0284c7","#0ea5e9","#2563eb"] },
-  { id:"forest",  name:"森林",   dots:["#15803d","#0d9488","#65a30d"] },
-  { id:"sakura",  name:"樱花",   dots:["#db2777","#fb7185","#e879f9"] },
-  { id:"sunset",  name:"日落",   dots:["#ea580c","#f43f5e","#f59e0b"] },
-  { id:"night",   name:"暗夜",   dots:["#6366f1","#a78bfa","#0e1320"] },
-  { id:"midnight",name:"午夜蓝", dots:["#2563eb","#0ea5e9","#0b1424"] },
+  { id:"indigo",  name:"纸墨",   dots:["#31584a","#b3562e","#f5f1e8"] },
+  { id:"pebl",    name:"苔径",   dots:["#3e6049","#a9633a","#edf1ea"] },
+  { id:"ocean",   name:"远洋",   dots:["#2f5e68","#a55e35","#ebf0ef"] },
+  { id:"forest",  name:"松林",   dots:["#3a5c2e","#9c5d2b","#edf2e9"] },
+  { id:"sakura",  name:"绯樱",   dots:["#9e4a5a","#3f5d54","#f6eee9"] },
+  { id:"sunset",  name:"暮色",   dots:["#a6572b","#31584a","#f7efe2"] },
+  { id:"night",   name:"夜读",   dots:["#c9a968","#c77950","#17130c"] },
+  { id:"midnight",name:"子夜",   dots:["#7fa3c4","#c99668","#101418"] },
 ];
 const TKEY = "engapp-theme";
 (function initTheme(){
   const btn = document.createElement("button");
-  btn.className = "theme-btn"; btn.id = "themeBtn"; btn.title = "切换主题"; btn.textContent = "🎨";
+  btn.className = "theme-btn"; btn.id = "themeBtn"; btn.title = "切换主题"; btn.setAttribute("aria-label", "切换主题");
+  btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>';
   const navRight = document.querySelector(".nav-right");
   if (navRight) navRight.insertBefore(btn, navRight.querySelector(".btn-login"));
   else { document.body.appendChild(btn); btn.style.cssText = "position:fixed;top:14px;right:14px;z-index:300"; }
 
   const panel = document.createElement("div");
   panel.className = "theme-panel";
-  panel.innerHTML = '<div class="tp-title">🎨 选择主题</div><div class="tp-grid">' +
+  panel.innerHTML = '<div class="tp-title">选择主题</div><div class="tp-grid">' +
     THEMES.map(t => '<button class="tp-item" data-id="'+t.id+'"><span class="tp-dots">'+t.dots.map(c=>'<i style="background:'+c+'"></i>').join("")+'</span><span>'+t.name+'</span></button>').join("") +
     '</div>';
   document.body.appendChild(panel);

@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#fafaf8" />
+<meta name="theme-color" content="#f5f1e8" />
 <title>背单词 · EngHub</title>
 <style>
-:root{--bg:#fafaf8;--ink:#1a1a1a;--dim:#9b9b97;--line:#ececea;--accent:#5b7c6f;--ok:#2f8f5b;--no:#c2603f}
+:root{--bg:#f5f1e8;--ink:#211d16;--dim:#7d7566;--line:#e3dccb;--accent:#31584a;--ok:#2f7a4e;--no:#b3402e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.7;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
 a{text-decoration:none;color:inherit}
@@ -14,16 +14,16 @@ a{text-decoration:none;color:inherit}
 .bar .back{color:var(--dim);font-size:.9rem}
 .bar .back:hover{color:var(--ink)}
 .bar .where{margin-left:auto;color:var(--dim);font-size:.85rem;letter-spacing:.04em}
-.mode-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
-.mode-toggle a{padding:6px 13px;border-radius:999px;font-weight:700;font-size:.85rem;color:var(--dim);text-decoration:none}
-.mode-toggle a.active{background:var(--accent);color:#fff}
+.mode-toggle{display:flex;background:#fffdf7;border:1px solid var(--line);border-radius:9px;padding:3px}
+.mode-toggle a{padding:6px 13px;border-radius:7px;font-weight:700;font-size:.85rem;color:var(--dim);text-decoration:none}
+.mode-toggle a.active{background:var(--accent);color:#fffdf7}
 .prog{max-width:680px;margin:0 auto;width:100%;padding:0 24px}
 .prog .nums{display:flex;justify-content:space-between;color:var(--dim);font-size:.82rem;margin-bottom:8px}
 .pbar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
 .pbar span{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .25s}
 .stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 24px 10px}
 .tag{letter-spacing:.22em;font-size:.72rem;color:var(--accent);font-weight:700;text-transform:uppercase}
-.word{font-size:clamp(2.4rem,10vw,3.8rem);font-weight:600;margin-top:18px;letter-spacing:-.01em;word-break:break-word}
+.word{font-family:Georgia,"Times New Roman","Noto Serif SC",serif;font-size:clamp(2.6rem,10vw,4rem);font-weight:600;margin-top:18px;letter-spacing:-.01em;word-break:break-word}
 .ph{color:var(--dim);margin-top:6px;font-size:1.1rem}
 .mn{margin-top:20px;font-size:1.25rem;max-width:26ch;cursor:pointer;filter:blur(8px);user-select:none}
 .mn.show{filter:none;cursor:default}
@@ -57,7 +57,7 @@ a{text-decoration:none;color:inherit}
 <body>
 <div class="bar">
   <a class="back" id="back" href="dashboard.html">← 返回</a>
-  <div class="mode-toggle"><a id="toList" href="words.html">📋 列表</a><a class="active">🎴 逐词</a></div>
+  <div class="mode-toggle"><a id="toList" href="words.html">列表</a><a class="active">逐词</a></div>
   <span class="where" id="where">加载中…</span>
 </div>
 <div class="prog" id="prog" style="display:none">
@@ -69,10 +69,10 @@ a{text-decoration:none;color:inherit}
   <div class="tag" id="tag">WORD 1</div>
   <div class="word" id="word">—</div>
   <div class="ph" id="ph"></div>
-  <div class="mn" id="mn"><span class="real" style="display:none"></span><span class="hint">👁 点击显示释义</span></div>
+  <div class="mn" id="mn"><span class="real" style="display:none"></span><span class="hint">点击显示释义</span></div>
   <div class="marked" id="mark"></div>
   <div class="row">
-    <button class="btn play" id="playBtn">🔊 发音</button>
+    <button class="btn play" id="playBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> 发音</button>
     <button class="btn no" id="noBtn">✗ 不认识</button>
     <button class="btn ok" id="okBtn">✓ 认识</button>
   </div>
@@ -82,7 +82,7 @@ a{text-decoration:none;color:inherit}
 </main>
 
 <div class="done" id="done">
-  <div class="big">🎉</div>
+  <div class="big" style="color:var(--ok)"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
   <h2 id="doneTitle">这组过完啦</h2>
   <p id="doneStat">认识 0 · 生词 0</p>
   <button class="again" id="againBtn">再背一遍</button>
@@ -90,7 +90,7 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <div class="empty" id="empty">
-  <div class="big">🚧</div>
+  <div class="big" style="color:var(--dim)"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
   <div id="emptyMsg">该考试的词库还没上线,先试试四级 / 六级吧～</div>
   <a class="back2" style="margin-top:18px;color:var(--accent)" href="index.html">← 回首页选考试</a>
 </div>
@@ -129,7 +129,7 @@ function render(){
   $('word').textContent=c.w;
   $('ph').textContent=(c.ph?('/'+String(c.ph).replace(/^\/|\/$/g,'')+'/'):'')+(c.pos?('　'+c.pos):'');
   const m=$('mn'); m.classList.remove('show');
-  m.innerHTML='<span class="real" style="display:none">'+c.mn+'</span><span class="hint">👁 点击显示释义</span>';
+  m.innerHTML='<span class="real" style="display:none">'+c.mn+'</span><span class="hint">点击显示释义</span>';
   const st=results[c.w], mk=$('mark');
   if(st==='unknown'){mk.className='marked n';mk.textContent='✗ 已记录:生词';reveal();}
   else if(st==='known'){mk.className='marked k';mk.textContent='✓ 已记录:认识';reveal();}

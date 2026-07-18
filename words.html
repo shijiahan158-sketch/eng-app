@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#4f46e5" />
+<meta name="theme-color" content="#f5f1e8" />
 <title>词表 · EngHub</title>
 <script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="stylesheet" href="assets/style.css" />
@@ -11,11 +11,12 @@
 .wl-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 0 14px}
 .wl-back{color:var(--dim);font-size:.9rem}
 .wl-back:hover{color:var(--ink)}
-.wl-title{font-size:1.15rem;font-weight:800}
-.mode-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
-.mode-toggle a{padding:7px 15px;border-radius:999px;font-weight:700;font-size:.88rem;color:var(--dim)}
-.mode-toggle a.active{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
-.wl-search{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--ink);outline:none;font-size:.9rem;min-width:170px}
+.wl-title{font-family:var(--serif);font-size:1.18rem;font-weight:700}
+.mode-toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:3px}
+.mode-toggle a{padding:7px 15px;border-radius:7px;font-weight:700;font-size:.88rem;color:var(--dim)}
+.mode-toggle a.active{background:var(--brand);color:var(--on-brand)}
+.wl-search{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 16px;color:var(--ink);outline:none;font-size:.9rem;min-width:170px;transition:border-color .16s}
+.wl-search:focus{border-color:var(--ink)}
 .wl{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-bottom:50px}
 .wl-side{position:sticky;top:calc(var(--nav-h) + 12px);align-self:start;display:flex;flex-direction:column;gap:2px}
 .wl-side .st{font-size:.78rem;color:var(--dim);font-weight:700;padding:0 10px 8px}
@@ -25,11 +26,11 @@
 .wl-side a .c{opacity:.6;font-size:.8rem}
 .wl-count{color:var(--dim);font-size:.85rem;margin-bottom:12px}
 .wcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.wcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);position:relative;border-left:3px solid transparent}
+.wcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;position:relative;border-left:3px solid transparent}
 .wcard.known{border-left-color:var(--brand)}
-.wcard.unknown{border-left-color:#e0556f}
+.wcard.unknown{border-left-color:var(--bad)}
 .wcard .top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.wcard .w{font-size:1.15rem;font-weight:800}
+.wcard .w{font-family:Georgia,"Times New Roman",serif;font-size:1.18rem;font-weight:700}
 .wcard .sp{cursor:pointer;color:var(--brand);background:none;border:0;font-size:.95rem;flex:none}
 .wcard .ph{color:var(--dim);font-size:.8rem;font-style:italic;margin-top:2px}
 .wcard .mn{color:var(--ink);font-size:.9rem;margin-top:8px;opacity:.92}
@@ -40,7 +41,7 @@
 </head>
 <body>
 <header class="nav">
-  <a class="brand" href="index.html"><span class="m">📚</span> EngHub</a>
+  <a class="brand" href="index.html"><span class="m"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> EngHub</a>
   <nav class="nav-links" id="navLinks">
     <a href="index.html">首页</a>
     <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
@@ -58,8 +59,8 @@
     <a class="wl-back" id="back" href="dashboard.html">← 返回</a>
     <span class="wl-title" id="title">词汇</span>
     <div class="mode-toggle">
-      <a class="active">📋 列表</a>
-      <a id="toStudy" href="study.html">🎴 逐词背</a>
+      <a class="active">列表</a>
+      <a id="toStudy" href="study.html">逐词背</a>
     </div>
     <input class="wl-search" id="search" placeholder="搜单词 / 释义…" />
   </div>
@@ -71,7 +72,7 @@
       <div class="wcards" id="cards"></div>
     </main>
   </div>
-  <div class="wl-empty" id="empty" style="display:none">🚧 该考试的词库还没上线,先试试四级 / 六级吧～</div>
+  <div class="wl-empty" id="empty" style="display:none">该考试的词库还没上线,先试试四级 / 六级吧～</div>
 </div>
 
 <script>
@@ -115,7 +116,7 @@ function render(){
   $('count').textContent='共 '+arr.length+' 词'+(cur!=='全部'?'('+cur+')':'');
   $('cards').innerHTML=arr.map(d=>{
     const st=results[d.w]; const cls=st==='known'?' known':(st==='unknown'?' unknown':'');
-    const badge=st==='known'?'<span class="tag" style="color:var(--brand)">✓ 认识</span>':(st==='unknown'?'<span class="tag" style="color:#e0556f">✗ 生词</span>':'');
+    const badge=st==='known'?'<span class="tag" style="color:var(--brand)">✓ 认识</span>':(st==='unknown'?'<span class="tag" style="color:var(--bad)">✗ 生词</span>':'');
     return '<div class="wcard'+cls+'"><div class="top"><span class="w">'+esc(d.w)+'</span><button class="sp" data-say="'+esc(d.w)+'">🔊</button></div>'+
       (d.ph?'<div class="ph">/'+esc(String(d.ph).replace(/^\/|\/$/g,""))+'/'+(d.pos?' '+esc(d.pos):'')+'</div>':'')+
       '<div class="mn">'+esc(d.mn)+'</div>'+badge+'</div>';
