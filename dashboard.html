@@ -26,15 +26,21 @@
 
 <div class="wrap">
   <section class="hero">
-    <span class="hi">下午好，今天也要加油</span>
-    <h1 class="cd">距 <span id="examLabel">四级</span>考试还有 <span class="big" id="days">--</span> 天</h1>
-    <p class="subt">再拼一把，把目标一次拿下 <span class="edit">修改考试日期</span></p>
+    <span class="hi" id="hi">今天也要加油</span>
+    <h1 class="cd" id="heroTitle">从第一个词开始</h1>
+    <p class="subt" id="heroSub"></p>
+    <div class="vprog" id="vprog" style="display:none">
+      <div class="vbar"><span id="vfill" style="width:0%"></span></div>
+      <span class="vtext" id="vtext"></span>
+    </div>
     <div class="r">
       <div class="kpi"><b>0</b><span>连续打卡</span></div>
       <div class="kpi"><b>0</b><span>已背词</span></div>
       <div class="kpi"><b>—</b><span>掌握率</span></div>
       <button class="cont" id="contStudy">继续背单词 →</button>
+      <button class="cont ghost" id="quizWords">自测生词</button>
     </div>
+    <p class="exam-line" id="examLine"></p>
   </section>
 
   <section class="sec">

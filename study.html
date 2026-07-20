@@ -144,7 +144,9 @@ document.getElementById('back2').href='dashboard.html?exam='+exam;
 document.getElementById('toList').href='words.html?exam='+exam;
 
 let DECK=[], SD=[], idx=0, results={};
-let range='all', shuffled=false, autoplay=false;
+// 入口可指定背诵范围(如备考中心「自测生词」→ ?range=unknown)
+let range=['all','unknown','new'].includes(params.get('range'))?params.get('range'):'all';
+let shuffled=false, autoplay=false;
 let mode = params.get('mode')==='quiz' ? 'quiz' : 'learn';   // 默认永远是学习模式,不持久化
 let stage=2;            // 0 全遮 / 1 例句已显 / 2 全显;learn 恒为 2
 let judged=false;       // 当前卡本轮是否已作答(quiz)

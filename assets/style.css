@@ -104,6 +104,15 @@ svg{display:inline-block;vertical-align:-.18em}
 .kpi b{display:block;font-family:var(--serif);font-size:1.5rem;font-variant-numeric:tabular-nums}.kpi span{font-size:.74rem;opacity:.85;letter-spacing:.06em}
 .hero .cont{background:var(--on-brand);color:var(--brand);font-weight:800;padding:13px 24px;border-radius:10px;cursor:pointer;border:0;letter-spacing:.02em;transition:opacity .16s}
 .hero .cont:hover{opacity:.9}
+.hero .cont.ghost{background:transparent;color:var(--on-brand);border:1px solid color-mix(in srgb,var(--on-brand) 40%,transparent);font-weight:700}
+.hero .cont.ghost:hover{border-color:var(--on-brand);opacity:1}
+.hero .vprog{display:flex;align-items:center;gap:12px;max-width:520px;width:100%}
+.hero .vbar{flex:1;height:6px;border-radius:999px;background:color-mix(in srgb,var(--on-brand) 18%,transparent);overflow:hidden}
+.hero .vbar span{display:block;height:100%;background:var(--on-brand);border-radius:999px;transition:width .4s}
+.hero .vtext{font-size:.8rem;opacity:.85;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hero .exam-line{font-size:.8rem;opacity:.8;margin-top:4px}
+.hero .exam-line b{font-variant-numeric:tabular-nums}
+.hero .exam-line a{border-bottom:1px dashed color-mix(in srgb,var(--on-brand) 60%,transparent);cursor:pointer}
 
 .sec{margin-top:36px}
 .sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
