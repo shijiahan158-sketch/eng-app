@@ -77,6 +77,10 @@ if (document.getElementById("heroTitle")) {
   const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
   const gm = document.getElementById("goMistakes"); if (gm) { gm.style.cursor = "pointer"; gm.addEventListener("click", () => { location.href = "mistakes.html"; }); }
   const gw = document.getElementById("goWords"); if (gw) { gw.style.cursor = "pointer"; gw.addEventListener("click", () => { location.href = "words.html?exam=" + code + "&f=unknown"; }); }
+  [["goPlan","plan.html"],["goCal","calendar.html"],["goReport","report.html"]].forEach(([id,href]) => {
+    const el = document.getElementById(id);
+    if (el) { el.style.cursor = "pointer"; el.addEventListener("click", () => { location.href = href; }); }
+  });
 
   // 按题型学习（听力/阅读/写作/翻译）+ 真题实战 → 题库页 tests.html
   const goTest = type => { location.href = "tests.html?type=" + type + "&exam=" + code; };
@@ -184,23 +188,32 @@ if (document.getElementById("heroTitle")) {
   }
   renderWeek();
 
-  // 今日计划：勾选状态按天持久化
-  const PL = "engapp-plan";
+  // 今日计划:清单项来自学习计划页配置(engapp-plan-items),勾选状态按天持久化(按 id)
+  const PL = "engapp-plan", PLI = "engapp-plan-items";
   const getPL = () => { try { return JSON.parse(localStorage.getItem(PL) || "{}"); } catch (e) { return {}; } };
+  const DEFAULT_ITEMS = [{id:"p1",text:"背单词 30 个"},{id:"p2",text:"复习生词 20 个"},{id:"p3",text:"阅读真题 1 篇"},{id:"p4",text:"听力精听 10 分钟"}];
+  const getItems = () => { try { const a = JSON.parse(localStorage.getItem(PLI) || "[]"); return (Array.isArray(a) && a.length) ? a : DEFAULT_ITEMS; } catch (e) { return DEFAULT_ITEMS; } };
+  const escT = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
   const todo = document.getElementById("todo");
-  if (todo) {
-    const lis = [].slice.call(todo.querySelectorAll("li"));
-    const saved = getPL()[today];
-    if (saved) lis.forEach((li, i) => { const d = saved.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; });
-    todo.addEventListener("click", e => {
-      const li = e.target.closest("li"); if (!li) return;
-      li.classList.toggle("done"); const b = li.querySelector(".b"); if (b) b.textContent = li.classList.contains("done") ? "✓" : "";
-      const done = []; lis.forEach((l, i) => { if (l.classList.contains("done")) done.push(i); });
-      const p = getPL(); p[today] = done; localStorage.setItem(PL, JSON.stringify(p)); sync();
-    });
+  function renderTodo(){
+    if (!todo) return;
+    const doneIds = getPL()[today] || [];
+    todo.innerHTML = getItems().map(it => {
+      const d = doneIds.indexOf(it.id) >= 0;
+      return '<li data-id="' + escT(it.id) + '"' + (d ? ' class="done"' : "") + '><span class="b">' + (d ? "✓" : "") + '</span><span class="x">' + escT(it.text) + "</span></li>";
+    }).join("");
   }
+  renderTodo();
+  if (todo) todo.addEventListener("click", e => {
+    const li = e.target.closest("li"); if (!li) return;
+    const id = li.dataset.id, p = getPL(), arr = p[today] || [];
+    const i = arr.indexOf(id);
+    if (i >= 0) arr.splice(i, 1); else arr.push(id);
+    p[today] = arr; localStorage.setItem(PL, JSON.stringify(p)); sync();
+    renderTodo();
+  });
 
   // 登录后云端数据合并到本地 → 重新渲染打卡/计划
-  if (window.CloudAuth) CloudAuth.onLogin = function () { renderWeek(); renderKPI(); renderHero(); if (todo) { const s2 = getPL()[today] || []; [].slice.call(todo.querySelectorAll("li")).forEach((li, i) => { const d = s2.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; }); } };
-  setTimeout(function(){ renderWeek(); renderKPI(); renderHero(); }, 1200); // 等 syncDown 合并云端数据后再刷新
+  if (window.CloudAuth) CloudAuth.onLogin = function () { renderWeek(); renderKPI(); renderHero(); renderTodo(); };
+  setTimeout(function(){ renderWeek(); renderKPI(); renderHero(); renderTodo(); }, 1200); // 等 syncDown 合并云端数据后再刷新
 }

@@ -146,6 +146,8 @@ svg{display:inline-block;vertical-align:-.18em}
 .plan{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
 .panel h3{font-family:var(--serif);font-size:1.02rem;font-weight:700;margin-bottom:14px}
+.panel .p-edit{float:right;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:.8rem;font-weight:600;color:var(--dim);transition:color .15s}
+.panel .p-edit:hover{color:var(--ink)}
 .week{display:flex;justify-content:space-between;gap:6px}
 .day{flex:1;text-align:center;color:var(--dim);font-size:.78rem}
 .day .d{width:100%;aspect-ratio:1;max-width:42px;margin:6px auto 0;border-radius:9px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--dim)}

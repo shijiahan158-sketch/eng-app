@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#f5f1e8" />
+<title>打卡日历 · EngHub</title>
+<script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .ck-wrap{max-width:880px;margin:0 auto;padding:24px clamp(16px,4vw,24px) 60px}
+  .ck-head{margin-bottom:18px}
+  .ck-head h1{font-family:var(--serif);font-size:clamp(1.4rem,3.4vw,2rem);font-weight:700}
+  .ck-head .sub{color:var(--dim);margin-top:4px}
+  .ck-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+  .ck-stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+  .ck-stat b{display:block;font-family:var(--serif);font-size:1.85rem;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--brand)}
+  .ck-stat b i{font-style:normal;font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:.78rem;font-weight:600;color:var(--dim);margin-left:3px}
+  .ck-stat span{color:var(--dim);font-size:.78rem;letter-spacing:.06em}
+  .ck-cal{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px clamp(12px,3vw,22px) 20px}
+  .ck-calhead{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .ck-calhead h2{font-family:var(--serif);font-size:1.18rem;font-weight:700;min-width:9ch;text-align:center;font-variant-numeric:tabular-nums}
+  .ck-arrow{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:border-color .16s,color .16s}
+  .ck-arrow:hover{border-color:var(--brand);color:var(--brand)}
+  .ck-week{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+  .ck-week span{text-align:center;color:var(--dim);font-size:.76rem;font-weight:700;letter-spacing:.06em;padding:6px 0}
+  .ck-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .ck-day{aspect-ratio:1;display:grid;place-items:center}
+  .ck-day .n{width:min(38px,74%);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .ck-day .n.done{background:var(--brand);color:var(--on-brand)}
+  .ck-day .n.today{outline:2px solid var(--accent);outline-offset:2px}
+  .ck-note{color:var(--dim);font-size:.82rem;margin-top:14px;text-align:center}
+  @media(max-width:520px){
+    .ck-stats{grid-template-columns:1fr}
+    .ck-stat{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:13px 16px}
+    .ck-stat b{font-size:1.5rem}
+  }
+</style>
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="m"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> EngHub</a>
+  <nav class="nav-links" id="navLinks">
+    <a href="index.html">首页</a>
+    <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
+    <a href="dashboard.html?exam=cet6" data-exam="cet6">六级</a>
+    <a href="dashboard.html?exam=ielts" data-exam="ielts">雅思</a>
+  </nav>
+  <div class="nav-right">
+    <div class="nav-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <input placeholder="搜单词 / 题目…" /></div>
+    <button class="btn-login">登录</button>
+  </div>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</header>
+
+<div class="ck-wrap">
+  <div class="ck-head">
+    <h1>打卡日历</h1>
+    <p class="sub">每天打开学习即自动打卡 —— 登录后云端保存。</p>
+  </div>
+
+  <div class="ck-stats">
+    <div class="ck-stat"><span>总打卡天数</span><b id="stTotal">0<i>天</i></b></div>
+    <div class="ck-stat"><span>当前连续</span><b id="stStreak">0<i>天</i></b></div>
+    <div class="ck-stat"><span>最长连续</span><b id="stBest">0<i>天</i></b></div>
+    <div class="ck-stat"><span>本月打卡</span><b id="stMonth">0<i>天</i></b></div>
+  </div>
+
+  <div class="ck-cal">
+    <div class="ck-calhead">
+      <button class="ck-arrow" id="prevBtn" aria-label="上个月"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h2 id="calTitle"></h2>
+      <button class="ck-arrow" id="nextBtn" aria-label="下个月"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="ck-week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+    <div class="ck-grid" id="calGrid"></div>
+    <p class="ck-note">墨绿实心 = 已打卡 · 描边圈 = 今天</p>
+  </div>
+</div>
+
+<footer class="foot">EngHub · 打卡日历</footer>
+<script src="assets/app.js"></script>
+<script src="assets/cloud-auth.js"></script>
+<script>
+(function(){
+  var CK="engapp-checkin";
+  var pad=function(n){ return (n<10?"0":"")+n; };
+  var dstr=function(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+  var today=dstr(new Date());
+  function getCK(){ try{ var a=JSON.parse(localStorage.getItem(CK)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+  function sync(){ if(window.CloudAuth&&CloudAuth.isLoggedIn())CloudAuth.syncUp(); }
+
+  // 本页打开也算打卡：今天入列，去重 + 排序
+  (function(){
+    var a=getCK(), had=a.indexOf(today)>=0;
+    if(!had) a.push(today);
+    var set={}; a.forEach(function(x){ if(typeof x==="string") set[x]=1; });
+    localStorage.setItem(CK, JSON.stringify(Object.keys(set).sort()));
+    if(!had) sync();
+  })();
+
+  // "YYYY-MM-DD" → 天序号（UTC 整除，避开时区/夏令时）
+  function dayNum(s){
+    var p=s.split("-");
+    return Math.round(Date.UTC(+p[0], +p[1]-1, +p[2])/86400000);
+  }
+  function streaks(){
+    var arr=getCK();
+    var set={}; arr.forEach(function(x){ set[x]=1; });
+    // 当前连续：从今天往前数
+    var cur=0, d=new Date();
+    while(set[dstr(d)]){ cur++; d.setDate(d.getDate()-1); }
+    // 最长连续：排好序的天序号扫一遍
+    var nums=arr.map(dayNum).sort(function(a,b){return a-b;});
+    var best=0, run=0, prev=null;
+    nums.forEach(function(n){
+      run=(prev!==null&&n===prev+1)?run+1:1;
+      if(run>best)best=run;
+      prev=n;
+    });
+    return {total:arr.length, cur:cur, best:best};
+  }
+
+  // 视图月份（默认今天所在月）
+  var now=new Date(), viewY=now.getFullYear(), viewM=now.getMonth();
+
+  var titleEl=document.getElementById("calTitle"), gridEl=document.getElementById("calGrid");
+  function render(){
+    var arr=getCK(), set={}; arr.forEach(function(x){ set[x]=1; });
+    var s=streaks();
+    var thisMonth=today.slice(0,7), monthCnt=0;
+    arr.forEach(function(x){ if(x.slice(0,7)===thisMonth) monthCnt++; });
+    document.getElementById("stTotal").innerHTML=s.total+"<i>天</i>";
+    document.getElementById("stStreak").innerHTML=s.cur+"<i>天</i>";
+    document.getElementById("stBest").innerHTML=s.best+"<i>天</i>";
+    document.getElementById("stMonth").innerHTML=monthCnt+"<i>天</i>";
+
+    titleEl.textContent=viewY+" 年 "+(viewM+1)+" 月";
+    var first=new Date(viewY,viewM,1);
+    var lead=(first.getDay()+6)%7;                 // 周一开头的空位数
+    var days=new Date(viewY,viewM+1,0).getDate();  // 当月天数
+    var html="", i;
+    for(i=0;i<lead;i++) html+='<div class="ck-day"></div>';
+    for(i=1;i<=days;i++){
+      var ds=viewY+"-"+pad(viewM+1)+"-"+pad(i);
+      var cls="n"+(set[ds]?" done":"")+(ds===today?" today":"");
+      html+='<div class="ck-day"><span class="'+cls+'">'+i+'</span></div>';
+    }
+    var tail=(lead+days)%7;
+    if(tail) for(i=tail;i<7;i++) html+='<div class="ck-day"></div>';
+    gridEl.innerHTML=html;
+  }
+
+  document.getElementById("prevBtn").onclick=function(){ viewM--; if(viewM<0){viewM=11;viewY--;} render(); };
+  document.getElementById("nextBtn").onclick=function(){ viewM++; if(viewM>11){viewM=0;viewY++;} render(); };
+
+  // 登录拉取云端后重渲染（本页不是备考中心，直接覆盖 onLogin）
+  if(window.CloudAuth) CloudAuth.onLogin=function(){ render(); };
+  render(); setTimeout(render,1200);
+})();
+</script>
+</body>
+</html>

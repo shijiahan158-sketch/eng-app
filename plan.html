@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#f5f1e8" />
+<title>学习计划 · EngHub</title>
+<script>try{var t=localStorage.getItem('engapp-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .pl-wrap{max-width:880px;margin:0 auto;padding:24px clamp(16px,4vw,24px) 60px}
+  .pl-head{margin-bottom:20px}
+  .pl-head h1{font-family:var(--serif);font-size:clamp(1.4rem,3.4vw,2rem);font-weight:700}
+  .pl-head .sub{color:var(--dim);margin-top:4px}
+  .pl-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px}
+  .pl-card-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .pl-card-h h2{font-family:var(--serif);font-size:1.15rem;font-weight:700}
+  .pl-card-h .date{color:var(--dim);font-size:.86rem}
+  .pl-card-h .badge{margin-left:auto;font-variant-numeric:tabular-nums}
+  /* 今日清单 */
+  .pl-todo{list-style:none}
+  .pl-todo li{display:flex;align-items:center;gap:11px;padding:10px 0;cursor:pointer;border-bottom:1px solid var(--line)}
+  .pl-todo li:last-child{border-bottom:0}
+  .pl-todo .b{width:20px;height:20px;border:1.5px solid var(--dim);border-radius:5px;display:grid;place-items:center;color:transparent;flex:none;transition:background .16s,border-color .16s,color .16s}
+  .pl-todo li:hover .b{border-color:var(--brand)}
+  .pl-todo li.done .b{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+  .pl-todo li.done .x{text-decoration:line-through;color:var(--dim)}
+  .pl-congrats{display:flex;align-items:center;gap:9px;margin-top:14px;padding:11px 14px;border-radius:10px;color:var(--good);font-weight:700;font-size:.92rem;background:color-mix(in srgb,var(--good) 8%,var(--card));border:1px solid color-mix(in srgb,var(--good) 26%,transparent)}
+  /* 管理计划项 */
+  .pl-manage{list-style:none}
+  .pl-manage li{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+  .pl-manage li:last-child{border-bottom:0}
+  .pl-manage .x{flex:1;min-width:0;overflow-wrap:anywhere}
+  .pl-ib{width:27px;height:27px;flex:none;display:grid;place-items:center;border:1px solid var(--line);border-radius:7px;background:none;color:var(--dim);cursor:pointer;transition:color .16s,border-color .16s}
+  .pl-ib:hover{color:var(--ink);border-color:var(--ink)}
+  .pl-ib:disabled{opacity:.32;cursor:default}
+  .pl-ib:disabled:hover{color:var(--dim);border-color:var(--line)}
+  .pl-ib.del:hover{color:var(--bad);border-color:var(--bad)}
+  .pl-addrow{display:flex;gap:10px;margin-top:16px}
+  .pl-addrow input{flex:1;min-width:0;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font-size:.95rem;outline:none;transition:border-color .16s}
+  .pl-addrow input:focus{border-color:var(--brand)}
+  .pl-addrow button{border:0;cursor:pointer;padding:10px 22px;border-radius:9px;background:var(--ink);color:var(--bg);font-weight:700;font-size:.92rem;letter-spacing:.02em;transition:opacity .16s}
+  .pl-addrow button:hover{opacity:.85}
+  .pl-empty{color:var(--dim);text-align:center;padding:22px 12px;border:1px dashed var(--line);border-radius:10px}
+  .pl-hint{color:var(--dim);font-size:.82rem;margin-top:14px}
+  @media(max-width:520px){.pl-card{padding:16px}.pl-card-h .badge{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="index.html"><span class="m"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> EngHub</a>
+  <nav class="nav-links" id="navLinks">
+    <a href="index.html">首页</a>
+    <a href="dashboard.html?exam=cet4" data-exam="cet4">四级</a>
+    <a href="dashboard.html?exam=cet6" data-exam="cet6">六级</a>
+    <a href="dashboard.html?exam=ielts" data-exam="ielts">雅思</a>
+  </nav>
+  <div class="nav-right">
+    <div class="nav-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> <input placeholder="搜单词 / 题目…" /></div>
+    <button class="btn-login">登录</button>
+  </div>
+  <button class="nav-toggle" id="navToggle">☰</button>
+</header>
+
+<div class="pl-wrap">
+  <div class="pl-head">
+    <h1>学习计划</h1>
+    <p class="sub">自定义每天要完成的任务清单</p>
+  </div>
+
+  <div class="pl-card">
+    <div class="pl-card-h">
+      <h2>今日清单</h2>
+      <span class="date" id="todayDate"></span>
+      <span class="badge" id="doneBadge"></span>
+    </div>
+    <ul class="pl-todo" id="todoList"></ul>
+    <div id="congrats" style="display:none" class="pl-congrats"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.27"/></svg> 今日计划全部完成，今天辛苦了</div>
+  </div>
+
+  <div class="pl-card">
+    <div class="pl-card-h">
+      <h2>管理计划项</h2>
+      <span class="date">增删改和排序会同步到每天的清单</span>
+    </div>
+    <ul class="pl-manage" id="manageList"></ul>
+    <div class="pl-addrow">
+      <input id="addInput" placeholder="新计划项，如：背单词 50 个" maxlength="60" />
+      <button id="addBtn">添加</button>
+    </div>
+    <p class="pl-hint">这份清单会显示在备考中心的「今日计划」里，每天自动重置勾选。</p>
+  </div>
+</div>
+
+<footer class="foot">EngHub · 学习计划</footer>
+<script src="assets/app.js"></script>
+<script src="assets/cloud-auth.js"></script>
+<script>
+(function(){
+  var ITEMS_KEY="engapp-plan-items", PLAN_KEY="engapp-plan";
+  function pad(n){ return String(n).padStart(2,"0"); }
+  var now=new Date();
+  var today=now.getFullYear()+"-"+pad(now.getMonth()+1)+"-"+pad(now.getDate());
+  function sync(){ if(window.CloudAuth&&CloudAuth.isLoggedIn())CloudAuth.syncUp(); }
+  function getItems(){ try{ var a=JSON.parse(localStorage.getItem(ITEMS_KEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+  function setItems(a){ localStorage.setItem(ITEMS_KEY,JSON.stringify(a)); sync(); }
+  function getPlan(){ try{ var o=JSON.parse(localStorage.getItem(PLAN_KEY)||"{}"); return (o&&typeof o==="object"&&!Array.isArray(o))?o:{}; }catch(e){ return {}; } }
+  function setPlan(o){ localStorage.setItem(PLAN_KEY,JSON.stringify(o)); sync(); }
+  function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
+
+  // 首次访问播种默认计划项（固定 id p1-p4，便于多端一致）
+  if(localStorage.getItem(ITEMS_KEY)===null){
+    setItems([
+      {id:"p1",text:"背单词 30 个"},
+      {id:"p2",text:"复习生词 20 个"},
+      {id:"p3",text:"阅读真题 1 篇"},
+      {id:"p4",text:"听力精听 10 分钟"}
+    ]);
+  }
+
+  var SVG_CHECK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  var SVG_UP='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+  var SVG_DOWN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  var SVG_X='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  var todoEl=document.getElementById("todoList"),
+      manageEl=document.getElementById("manageList"),
+      badgeEl=document.getElementById("doneBadge"),
+      congratsEl=document.getElementById("congrats"),
+      inputEl=document.getElementById("addInput");
+
+  document.getElementById("todayDate").textContent=
+    (now.getMonth()+1)+"月"+now.getDate()+"日 星期"+["日","一","二","三","四","五","六"][now.getDay()];
+
+  function render(){
+    var items=getItems();
+    var done=(getPlan()[today]||[]).map(String);
+    var doneCount=items.filter(function(it){ return done.indexOf(String(it.id))>=0; }).length;
+
+    // 今日清单
+    if(!items.length){
+      todoEl.innerHTML='<li style="cursor:default;border:0"><div class="pl-empty" style="flex:1">还没有计划项，先在下方「管理计划项」里添加</div></li>';
+    }else{
+      todoEl.innerHTML=items.map(function(it){
+        var d=done.indexOf(String(it.id))>=0;
+        return '<li data-id="'+esc(it.id)+'"'+(d?' class="done"':'')+'><span class="b">'+SVG_CHECK+'</span><span class="x">'+esc(it.text)+'</span></li>';
+      }).join("");
+    }
+    badgeEl.textContent=items.length?(doneCount+" / "+items.length+" 已完成"):"暂无计划";
+    congratsEl.style.display=(items.length&&doneCount===items.length)?"flex":"none";
+
+    // 管理计划项
+    if(!items.length){
+      manageEl.innerHTML='<li style="border:0"><div class="pl-empty" style="flex:1">清单是空的，添加第一条计划吧</div></li>';
+    }else{
+      manageEl.innerHTML=items.map(function(it,i){
+        return '<li data-id="'+esc(it.id)+'">'+
+          '<button class="pl-ib" data-act="up" data-i="'+i+'" title="上移"'+(i===0?' disabled':'')+'>'+SVG_UP+'</button>'+
+          '<button class="pl-ib" data-act="down" data-i="'+i+'" title="下移"'+(i===items.length-1?' disabled':'')+'>'+SVG_DOWN+'</button>'+
+          '<span class="x">'+esc(it.text)+'</span>'+
+          '<button class="pl-ib del" data-act="del" data-i="'+i+'" title="删除">'+SVG_X+'</button>'+
+        '</li>';
+      }).join("");
+    }
+  }
+
+  // 勾选：写入 engapp-plan[今天] = 完成的 id 数组（顺带清掉已不存在的 id）
+  todoEl.addEventListener("click",function(e){
+    var li=e.target.closest("li[data-id]"); if(!li)return;
+    var id=li.dataset.id, items=getItems();
+    var ids=items.map(function(it){ return String(it.id); });
+    var plan=getPlan();
+    var arr=(plan[today]||[]).map(String).filter(function(x){ return ids.indexOf(x)>=0; });
+    var k=arr.indexOf(id);
+    if(k>=0)arr.splice(k,1); else arr.push(id);
+    plan[today]=arr; setPlan(plan); render();
+  });
+
+  // 管理：上移 / 下移 / 删除
+  manageEl.addEventListener("click",function(e){
+    var b=e.target.closest("button[data-act]"); if(!b||b.disabled)return;
+    var items=getItems(), i=parseInt(b.dataset.i,10);
+    if(isNaN(i)||i<0||i>=items.length)return;
+    if(b.dataset.act==="up"&&i>0){ var t=items[i-1]; items[i-1]=items[i]; items[i]=t; }
+    else if(b.dataset.act==="down"&&i<items.length-1){ var t2=items[i+1]; items[i+1]=items[i]; items[i]=t2; }
+    else if(b.dataset.act==="del"){
+      var rid=String(items[i].id); items.splice(i,1);
+      var plan=getPlan();
+      if(plan[today]){ plan[today]=plan[today].map(String).filter(function(x){ return x!==rid; }); setPlan(plan); }
+    }
+    setItems(items); render();
+  });
+
+  // 添加（按钮 + 回车），空输入不添加
+  function add(){
+    var text=inputEl.value.trim(); if(!text)return;
+    var items=getItems();
+    items.push({id:"p"+Date.now(),text:text});
+    setItems(items); inputEl.value=""; inputEl.focus(); render();
+  }
+  document.getElementById("addBtn").addEventListener("click",add);
+  inputEl.addEventListener("keydown",function(e){ if(e.key==="Enter")add(); });
+
+  // 登录拉取云端数据后重渲染（覆盖 app.js 里备考中心的 onLogin）
+  if(window.CloudAuth)CloudAuth.onLogin=function(){ render(); };
+  render(); setTimeout(render,1200);
+})();
+</script>
+</body>
+</html>

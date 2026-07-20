@@ -103,7 +103,8 @@
       mistakes: readJSON("engapp-mistakes", []),  // 错题本
       quiz: readJSON("engapp-quiz", {}),          // 做题记录
       checkin: readJSON("engapp-checkin", []),    // 打卡
-      plan: readJSON("engapp-plan", {}),          // 今日计划
+      plan: readJSON("engapp-plan", {}),          // 今日计划(按天勾选)
+      planItems: readJSON("engapp-plan-items", []), // 计划清单项(用户自定义)
       updatedAt: Date.now()
     };
   }
@@ -123,6 +124,7 @@
     if (doc.quiz) localStorage.setItem("engapp-quiz", JSON.stringify(Object.assign({}, doc.quiz, readJSON("engapp-quiz", {}))));
     if (doc.checkin) { var set = {}; doc.checkin.concat(readJSON("engapp-checkin", [])).forEach(function (x) { set[x] = 1; }); localStorage.setItem("engapp-checkin", JSON.stringify(Object.keys(set).sort())); }
     if (doc.plan) localStorage.setItem("engapp-plan", JSON.stringify(Object.assign({}, doc.plan, readJSON("engapp-plan", {}))));
+    if (doc.planItems && doc.planItems.length) { var lpi = readJSON("engapp-plan-items", []); if (!lpi.length) localStorage.setItem("engapp-plan-items", JSON.stringify(doc.planItems)); } // 本地非空优先
   }
   var syncing = false;
   function syncDown() { if (!user()) return Promise.resolve(); return loadData().then(function (d) { applyData(d); renderNav(); }).catch(function () {}); }
