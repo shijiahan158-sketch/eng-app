@@ -164,7 +164,7 @@ function exEn(c){ return '<p class="en">'+hi(esc(c.ex),c.w)+'<button class="ex-s
 
 const sc=document.createElement('script');
 sc.src='data/'+exam+'.js';
-sc.onload=()=>{ DECK=window.DECK||[]; if(!DECK.length){showEmpty();return;} startSession(); };
+sc.onload=()=>{ DECK=window.DECK||[]; if(!DECK.length){showEmpty();return;} try{localStorage.setItem('engapp-decksize-'+exam,DECK.length);}catch(e){} startSession(); };
 sc.onerror=showEmpty;
 document.head.appendChild(sc);
 

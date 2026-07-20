@@ -40,6 +40,25 @@ const TKEY = "engapp-theme";
   document.documentElement.setAttribute("data-theme", cur); mark(cur);
 })();
 
+// ===== 全站搜索:跳转到词表页定位单词 =====
+(function () {
+  const go = q => {
+    q = (q || "").trim(); if (!q) return;
+    let ex = "ielts"; try { ex = localStorage.getItem("engapp-exam") || "ielts"; } catch (e) {}
+    location.href = "words.html?exam=" + ex + "&q=" + encodeURIComponent(q);
+  };
+  document.querySelectorAll(".nav-search input").forEach(inp => {
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") go(inp.value); });
+  });
+  const hs = document.querySelector(".home-search");
+  if (hs) {
+    const inp = hs.querySelector("input"), btn = hs.querySelector("button");
+    const run = () => go(inp && inp.value);
+    if (btn) btn.addEventListener("click", run);
+    if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") run(); });
+  }
+})();
+
 // ===== 备考中心：考试预选 + 倒计时 + 计划勾选 =====
 if (document.getElementById("examLabel")) {
   const EXAM_DATES = ["2026-06-13","2026-12-19","2027-06-12","2027-12-18"];
@@ -49,13 +68,14 @@ if (document.getElementById("examLabel")) {
 
   // 入口接通:词汇 / 继续背单词 → 背单词页；我的笔记 → 笔记本页
   const code = MAP[param] ? param : "cet4";
+  try { localStorage.setItem("engapp-exam", code); } catch (e) {}
   const goList = () => { location.href = "words.html?exam=" + code; };
   const goStudy = () => { location.href = "study.html?exam=" + code; };
   const gv = document.getElementById("goVocab"); if (gv) { gv.style.cursor = "pointer"; gv.addEventListener("click", goList); }
   const cs = document.getElementById("contStudy"); if (cs) cs.addEventListener("click", goStudy);
   const gn = document.getElementById("goNotes"); if (gn) { gn.style.cursor = "pointer"; gn.addEventListener("click", () => { location.href = "notebook.html"; }); }
   const gm = document.getElementById("goMistakes"); if (gm) { gm.style.cursor = "pointer"; gm.addEventListener("click", () => { location.href = "mistakes.html"; }); }
-  const gw = document.getElementById("goWords"); if (gw) { gw.style.cursor = "pointer"; gw.addEventListener("click", () => { location.href = "words.html?exam=" + code; }); }
+  const gw = document.getElementById("goWords"); if (gw) { gw.style.cursor = "pointer"; gw.addEventListener("click", () => { location.href = "words.html?exam=" + code + "&f=unknown"; }); }
 
   // 按题型学习（听力/阅读/写作/翻译）+ 真题实战 → 题库页 tests.html
   const goTest = type => { location.href = "tests.html?type=" + type + "&exam=" + code; };
@@ -71,9 +91,55 @@ if (document.getElementById("examLabel")) {
   // 顶部导航高亮当前考试
   document.querySelectorAll('.nav-links a[data-exam]').forEach(a => a.classList.toggle("active", MAP[a.dataset.exam] === level));
 
-  function nextExam(){ const now=new Date(); for(const d of EXAM_DATES){ const t=new Date(d+"T09:00:00"); if(t>now) return {days:Math.ceil((t-now)/86400000),t}; } return {days:0,t:new Date()}; }
+  // 倒计时:优先使用用户自定义日期(按考试分别记忆),否则用官方场次表
+  const EDKEY = "engapp-examdate-" + code;
+  function customDate(){ try { const v = localStorage.getItem(EDKEY); if (v && new Date(v + "T09:00:00") > new Date()) return v; } catch (e) {} return null; }
+  function nextExam(){
+    const now = new Date(), c = customDate();
+    if (c) { const t = new Date(c + "T09:00:00"); return { days: Math.ceil((t - now) / 86400000), t }; }
+    for (const d of EXAM_DATES) { const t = new Date(d + "T09:00:00"); if (t > now) return { days: Math.ceil((t - now) / 86400000), t }; }
+    return { days: 0, t: new Date() };
+  }
   function renderCD(){ const {days,t}=nextExam(); document.getElementById("days").textContent=days; document.getElementById("examLabel").textContent=t.getFullYear()+" 年 "+(t.getMonth()+1)+" 月"+level; }
   renderCD();
+
+  // 修改考试日期:点击弹原生日期选择器(不支持时退化为输入框)
+  const editBtn = document.querySelector(".hero .edit");
+  if (editBtn) {
+    const di = document.createElement("input");
+    di.type = "date"; di.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;border:0;padding:0";
+    editBtn.after(di);
+    const applyDate = v => { if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) { try { localStorage.setItem(EDKEY, v); } catch (e) {} renderCD(); } };
+    editBtn.addEventListener("click", () => {
+      const cur = customDate() || (function(){ const t = nextExam().t; return t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0"); })();
+      di.value = cur;
+      try { di.showPicker(); }
+      catch (e) { const v = prompt("输入" + level + "考试日期(格式 YYYY-MM-DD)", cur); if (v) applyDate(v.trim()); }
+    });
+    di.addEventListener("change", () => applyDate(di.value));
+  }
+
+  // ===== KPI 与词汇进度:全部用真实学习数据 =====
+  const DECK_FALLBACK = { cet4: 40, cet6: 40, ielts: 3632 };
+  function studyStats(){
+    let k = 0, u = 0;
+    try { const r = JSON.parse(localStorage.getItem("study-" + code + "-results") || "{}");
+      for (const w in r) { if (r[w] === "known") k++; else if (r[w] === "unknown") u++; } } catch (e) {}
+    return { k, u };
+  }
+  function renderKPI(){
+    const { k, u } = studyStats(), marked = k + u;
+    const kpis = document.querySelectorAll(".kpi");
+    if (kpis[1]) kpis[1].querySelector("b").textContent = marked;                                  // 已背词 = 标记过的词数
+    if (kpis[2]) kpis[2].querySelector("b").textContent = marked ? Math.round(k / marked * 100) + "%" : "—";  // 掌握率 = 认识 / 已背
+    let size = 0; try { size = parseInt(localStorage.getItem("engapp-decksize-" + code), 10) || 0; } catch (e) {}
+    if (!size) size = DECK_FALLBACK[code] || 0;
+    const vocBar = document.querySelector(".tcard.voc .bar span");
+    if (vocBar) vocBar.style.width = (size ? Math.min(100, Math.round(k / size * 100)) : 0) + "%";
+    // 听力/阅读/写作/翻译暂无真实练习数据,进度条归零,接入后再点亮
+    ["lis","read","wri","tra"].forEach(c => { const b = document.querySelector(".tcard." + c + " .bar span"); if (b) b.style.width = "0%"; });
+  }
+  renderKPI();
 
   // ===== 打卡 + 今日计划（持久化 + 云端同步）=====
   const sync = () => { if (window.CloudAuth && CloudAuth.isLoggedIn()) CloudAuth.syncUp(); };
@@ -117,6 +183,6 @@ if (document.getElementById("examLabel")) {
   }
 
   // 登录后云端数据合并到本地 → 重新渲染打卡/计划
-  if (window.CloudAuth) CloudAuth.onLogin = function () { renderWeek(); if (todo) { const s2 = getPL()[today] || []; [].slice.call(todo.querySelectorAll("li")).forEach((li, i) => { const d = s2.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; }); } };
-  setTimeout(renderWeek, 1200); // 等 syncDown 合并云端打卡后再刷新
+  if (window.CloudAuth) CloudAuth.onLogin = function () { renderWeek(); renderKPI(); if (todo) { const s2 = getPL()[today] || []; [].slice.call(todo.querySelectorAll("li")).forEach((li, i) => { const d = s2.indexOf(i) >= 0; li.classList.toggle("done", d); const b = li.querySelector(".b"); if (b) b.textContent = d ? "✓" : ""; }); } };
+  setTimeout(function(){ renderWeek(); renderKPI(); }, 1200); // 等 syncDown 合并云端数据后再刷新
 }
